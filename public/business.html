@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negocio - Yo Compro Acacías</title>
+    <link rel="stylesheet" href="/css/business.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- OPTIMIZACIÓN DE SCROLL - CARGAR PRIMERO PARA MÁXIMO RENDIMIENTO -->
+    <script src="/js/scroll-optimizer.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i>
+                <span>NEGOCIO VERIFICADO EN ACACÍAS</span>
+            </div>
+            <h1 class="hero-title" id="heroTitle">Cargando...</h1>
+            <p class="hero-subtitle" id="heroSubtitle">Descubre este increíble negocio local en Acacías, Meta</p>
+        </div>
+        <div class="hero-image">
+            <div class="business-logo" id="businessLogo">
+                <i class="fas fa-store"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Business Images Gallery -->
+    <section class="business-gallery" id="businessGallery" style="display: none;">
+        <div class="container">
+            <div class="gallery-header">
+                <h3>Fotos del Negocio</h3>
+                <p>Imágenes oficiales de Google My Business</p>
+            </div>
+            <div class="gallery-carousel">
+                <div class="carousel-container">
+                    <div class="carousel-track" id="carouselTrack">
+                        <!-- Las imágenes se cargarán dinámicamente aquí -->
+                    </div>
+                    <button class="carousel-btn prev" id="prevBtn" onclick="scrollCarousel('prev')">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-btn next" id="nextBtn" onclick="scrollCarousel('next')">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="carousel-indicators" id="carouselIndicators">
+                    <!-- Los indicadores se generarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="loading-state">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>Cargando información del negocio</h2>
+            <p>Obteniendo datos del negocio...</p>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="error-state" style="display: none;">
+        <div class="error-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Negocio no encontrado</h2>
+            <p>Error cargando la información del negocio</p>
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i>
+                Volver al directorio
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="main-content" style="display: none;">
+        <!-- Navigation Header -->
+        <nav class="top-nav">
+            <div class="container">
+                <a href="/" class="nav-back">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Directorio</span>
+                </a>
+                <div class="nav-actions">
+                    <button class="nav-btn" onclick="shareBusiness()">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-content">
+                    <h2 class="cta-title">¿BUSCAS ESTE TIPO DE NEGOCIO?</h2>
+                    <p class="cta-subtitle">Encuentra la mejor calidad y servicio que no conseguirás en otros lugares</p>
+                    <div class="cta-actions">
+                        <button class="cta-btn primary" id="mainActionBtn">
+                            <i class="fas fa-phone"></i>
+                            CONTACTAR AHORA
+                        </button>
+                        <button class="cta-btn secondary" id="directionsBtn">
+                            <i class="fas fa-map-marker-alt"></i>
+                            CÓMO LLEGAR
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" id="businessRating">N/A</div>
+                        <div class="stat-label">CALIFICACIÓN</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="businessReviews">0</div>
+                        <div class="stat-label">RESEÑAS</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">LOCAL</div>
+                        <div class="stat-label">ACACÍAS</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Choose Section -->
+        <section class="why-section">
+            <div class="container">
+                <h2 class="section-title">POR QUÉ ELEGIR <span id="businessNameTitle">ESTE NEGOCIO</span></h2>
+                <div class="why-grid">
+                    <div class="why-item">
+                        <div class="why-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h4>Ubicación Conveniente</h4>
+                        <p id="businessAddress">Ubicado en Acacías, Meta</p>
+                    </div>
+                    <div class="why-item">
+                        <div class="why-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h4>Calidad Garantizada</h4>
+                        <p id="businessDescription">Negocio local comprometido con la excelencia en productos y servicios.</p>
+                    </div>
+                    <div class="why-item">
+                        <div class="why-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>Atención Personalizada</h4>
+                        <p>Servicio al cliente dedicado y atención personalizada para cada visitante.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Business Details Section -->
+        <section class="details-section">
+            <div class="container">
+                <div class="details-grid">
+                    <!-- Contact Info -->
+                    <div class="info-card">
+                        <h3><i class="fas fa-address-book"></i> Información de Contacto</h3>
+                        <div class="contact-list">
+                            <div class="contact-item" id="addressSection">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <div>
+                                    <strong>Dirección</strong>
+                                    <p id="businessAddressDetail">Cargando dirección...</p>
+                                </div>
+                            </div>
+                            <div class="contact-item" id="phoneSection" style="display: none;">
+                                <i class="fas fa-phone"></i>
+                                <div>
+                                    <strong>Teléfono</strong>
+                                    <p id="businessPhone">No disponible</p>
+                                </div>
+                            </div>
+                            <div class="contact-item" id="websiteSection" style="display: none;">
+                                <i class="fas fa-globe"></i>
+                                <div>
+                                    <strong>Sitio Web</strong>
+                                    <a href="#" id="businessWebsite" target="_blank">Visitar sitio web</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Hours -->
+                    <div class="info-card">
+                        <h3><i class="fas fa-clock"></i> Horarios de Atención</h3>
+                        <div class="hours-content" id="businessHours">
+                            <p>Horarios no disponibles</p>
+                        </div>
+                    </div>
+
+                    <!-- Business Images -->
+                    <div class="info-card" id="imagesCard">
+                        <h3><i class="fas fa-images"></i> Imágenes del Negocio</h3>
+                        <div class="images-gallery" id="businessImages">
+                            <div class="image-placeholder">
+                                <i class="fas fa-camera"></i>
+                                <p>Cargando imágenes...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Media Links -->
+                    <div class="info-card" id="socialMediaSection" style="display: none;">
+                        <h3><i class="fas fa-share-alt"></i> Redes Sociales</h3>
+                        <div class="social-links">
+                            <!-- WhatsApp Business -->
+                            <a href="#" id="whatsappLink" class="social-link whatsapp" style="display: none;" target="_blank" rel="noopener noreferrer">
+                                <div class="social-icon">
+                                    <i class="fab fa-whatsapp"></i>
+                                </div>
+                                <div class="social-info">
+                                    <span class="social-name">WhatsApp</span>
+                                    <span class="social-desc">Contacto directo</span>
+                                </div>
+                            </a>
+                            
+                            <!-- Facebook Page -->
+                            <a href="#" id="facebookLink" class="social-link facebook" style="display: none;" target="_blank" rel="noopener noreferrer">
+                                <div class="social-icon">
+                                    <i class="fab fa-facebook-f"></i>
+                                </div>
+                                <div class="social-info">
+                                    <span class="social-name">Facebook</span>
+                                    <span class="social-desc">Página oficial</span>
+                                </div>
+                            </a>
+                            
+                            <!-- Instagram -->
+                            <a href="#" id="instagramLink" class="social-link instagram" style="display: none;" target="_blank" rel="noopener noreferrer">
+                                <div class="social-icon">
+                                    <i class="fab fa-instagram"></i>
+                                </div>
+                                <div class="social-info">
+                                    <span class="social-name">Instagram</span>
+                                    <span class="social-desc">Fotos y videos</span>
+                                </div>
+                            </a>
+                            
+                            <!-- TikTok -->
+                            <a href="#" id="tiktokLink" class="social-link tiktok" style="display: none;" target="_blank" rel="noopener noreferrer">
+                                <div class="social-icon">
+                                    <i class="fab fa-tiktok"></i>
+                                </div>
+                                <div class="social-info">
+                                    <span class="social-name">TikTok</span>
+                                    <span class="social-desc">Videos cortos</span>
+                                </div>
+                            </a>
+                            
+                            <!-- YouTube -->
+                            <a href="#" id="youtubeLink" class="social-link youtube" style="display: none;" target="_blank" rel="noopener noreferrer">
+                                <div class="social-icon">
+                                    <i class="fab fa-youtube"></i>
+                                </div>
+                                <div class="social-info">
+                                    <span class="social-name">YouTube</span>
+                                    <span class="social-desc">Canal oficial</span>
+                                </div>
+                            </a>
+                            
+                            <!-- LinkedIn -->
+                            <a href="#" id="linkedinLink" class="social-link linkedin" style="display: none;" target="_blank" rel="noopener noreferrer">
+                                <div class="social-icon">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </div>
+                                <div class="social-info">
+                                    <span class="social-name">LinkedIn</span>
+                                    <span class="social-desc">Perfil empresarial</span>
+                                </div>
+                            </a>
+                            
+                            <!-- Twitter -->
+                            <a href="#" id="twitterLink" class="social-link twitter" style="display: none;" target="_blank" rel="noopener noreferrer">
+                                <div class="social-icon">
+                                    <i class="fab fa-twitter"></i>
+                                </div>
+                                <div class="social-info">
+                                    <span class="social-name">Twitter</span>
+                                    <span class="social-desc">Noticias y updates</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons Section -->
+        <section class="actions-section">
+            <div class="container">
+                <div class="actions-grid">
+                    <button class="action-card" id="callBtn" style="display: none;">
+                        <div class="action-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Llamar Ahora</h4>
+                            <p>Contacta directamente</p>
+                        </div>
+                    </button>
+                    <button class="action-card" id="websiteBtn" style="display: none;">
+                        <div class="action-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Sitio Web</h4>
+                            <p>Visita su página</p>
+                        </div>
+                    </button>
+                    <button class="action-card" id="directionsActionBtn">
+                        <div class="action-icon">
+                            <i class="fas fa-directions"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Cómo Llegar</h4>
+                            <p>Ver en el mapa</p>
+                        </div>
+                    </button>
+                    <button class="action-card" onclick="shareBusiness()">
+                        <div class="action-icon">
+                            <i class="fas fa-share-alt"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Compartir</h4>
+                            <p>Recomendar negocio</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rating Section with Emoji Reactions -->
+        <section class="rating-section">
+            <div class="container">
+                <div class="rating-card">
+                    <h3>¿Qué te parece?</h3>
+                    <p class="rating-subtitle">Comparte tu opinión sobre este negocio</p>
+                    <div class="reactions-container">
+                        <div class="reaction-item" data-reaction="me-gusta">
+                            <div class="reaction-emoji">👍</div>
+                            <span class="reaction-label">Me gusta</span>
+                            <span class="reaction-count">0</span>
+                        </div>
+                        <div class="reaction-item" data-reaction="me-divierte">
+                            <div class="reaction-emoji">😆</div>
+                            <span class="reaction-label">Me divierte</span>
+                            <span class="reaction-count">0</span>
+                        </div>
+                        <div class="reaction-item" data-reaction="me-encanta">
+                            <div class="reaction-emoji">😍</div>
+                            <span class="reaction-label">Me encanta</span>
+                            <span class="reaction-count">0</span>
+                        </div>
+                        <div class="reaction-item" data-reaction="me-sorprende">
+                            <div class="reaction-emoji">😮</div>
+                            <span class="reaction-label">Me sorprende</span>
+                            <span class="reaction-count">0</span>
+                        </div>
+                        <div class="reaction-item" data-reaction="no-me-gusta">
+                            <div class="reaction-emoji">😤</div>
+                            <span class="reaction-label">No me gusta</span>
+                            <span class="reaction-count">0</span>
+                        </div>
+                        <div class="reaction-item" data-reaction="me-entristece">
+                            <div class="reaction-emoji">😢</div>
+                            <span class="reaction-label">Me entristece</span>
+                            <span class="reaction-count">0</span>
+                        </div>
+                    </div>
+                    <div class="total-responses">
+                        <span id="totalResponses">0</span> Respuestas
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QR Code Section -->
+        <section class="qr-section">
+            <div class="container">
+                <div class="qr-card">
+                    <div class="qr-content">
+                        <h3>Comparte este negocio</h3>
+                        <p>Escanea el código QR para compartir fácilmente</p>
+                        <div class="qr-code-container">
+                            <canvas id="qrCode"></canvas>
+                        </div>
+                        <button class="download-btn" onclick="downloadQR()">
+                            <i class="fas fa-download"></i>
+                            Descargar QR
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Compartir negocio</h3>
+                <button class="close-btn" onclick="closeShareModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Comparte este negocio:</p>
+                <div class="share-options">
+                    <input type="text" id="shareUrl" readonly>
+                    <button onclick="copyLink()">
+                        <i class="fas fa-copy"></i>
+                        Copiar enlace
+                    </button>
+                </div>
+                <div class="social-share">
+                    <button onclick="shareWhatsApp()">
+                        <i class="fab fa-whatsapp"></i>
+                        WhatsApp
+                    </button>
+                    <button onclick="shareFacebook()">
+                        <i class="fab fa-facebook"></i>
+                        Facebook
+                    </button>
+                    <button onclick="shareTwitter()">
+                        <i class="fab fa-twitter"></i>
+                        Twitter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/business.js"></script>
+</body>
+</html>

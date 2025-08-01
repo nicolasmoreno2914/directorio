@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autenticación Google My Business - Yo Compro Acacías</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            color: #333;
+        }
+        
+        .callback-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .callback-header {
+            margin-bottom: 30px;
+        }
+        
+        .callback-header i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .callback-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .callback-status {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .status-processing {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="callback-container">
+        <div class="callback-header">
+            <i class="fab fa-google"></i>
+            <h1>Autenticación Google My Business</h1>
+        </div>
+        
+        <div id="callbackStatus" class="callback-status status-processing">
+            <div class="spinner"></div>
+            Procesando autenticación...
+        </div>
+        
+        <div id="callbackActions" style="display: none;">
+            <a href="/admin.html" class="btn">
+                <i class="fas fa-tachometer-alt"></i>
+                Ir al Panel de Administración
+            </a>
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-home"></i>
+                Ir al Inicio
+            </a>
+        </div>
+    </div>
+
+    <script src="/js/google-auth.js"></script>
+    <script>
+        // Manejar el callback de OAuth2
+        async function handleOAuthCallback() {
+            const statusDiv = document.getElementById('callbackStatus');
+            const actionsDiv = document.getElementById('callbackActions');
+            
+            try {
+                // Verificar si hay parámetros de error
+                const urlParams = new URLSearchParams(window.location.search);
+                const error = urlParams.get('error');
+                const code = urlParams.get('code');
+                
+                if (error) {
+                    throw new Error(`Error de autenticación: ${error}`);
+                }
+                
+                if (!code) {
+                    throw new Error('No se recibió código de autorización');
+                }
+                
+                // Procesar el código de autorización
+                statusDiv.innerHTML = '<div class="spinner"></div>Intercambiando código por tokens...';
+                
+                const response = await fetch(`/.netlify/functions/google-oauth/callback?code=${code}`);
+                const data = await response.json();
+                
+                if (!response.ok || !data.success) {
+                    throw new Error(data.error || 'Error procesando la autenticación');
+                }
+                
+                // Guardar tokens
+                if (data.tokens) {
+                    if (data.tokens.access_token) {
+                        localStorage.setItem('google_access_token', data.tokens.access_token);
+                    }
+                    if (data.tokens.refresh_token) {
+                        localStorage.setItem('google_refresh_token', data.tokens.refresh_token);
+                    }
+                    if (data.tokens.expiry_date) {
+                        localStorage.setItem('google_token_expiry', data.tokens.expiry_date.toString());
+                    }
+                }
+                
+                // Mostrar éxito
+                statusDiv.className = 'callback-status status-success';
+                statusDiv.innerHTML = `
+                    <i class="fas fa-check-circle" style="color: #28a745; margin-right: 10px;"></i>
+                    ¡Autenticación exitosa! Tu cuenta de Google My Business está conectada.
+                `;
+                
+                actionsDiv.style.display = 'block';
+                
+                // Redirigir automáticamente después de 3 segundos
+                setTimeout(() => {
+                    window.location.href = '/admin.html#google-mb';
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Error en callback:', error);
+                
+                statusDiv.className = 'callback-status status-error';
+                statusDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="color: #dc3545; margin-right: 10px;"></i>
+                    Error: ${error.message}
+                `;
+                
+                actionsDiv.style.display = 'block';
+            }
+        }
+        
+        // Ejecutar cuando se carga la página
+        document.addEventListener('DOMContentLoaded', handleOAuthCallback);
+    </script>
+</body>
+</html>

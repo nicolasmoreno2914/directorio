@@ -1,0 +1,48 @@
+{
+  "name": "yo-compro-acacias",
+  "version": "1.0.0",
+  "description": "Directorio comercial digital para Acacías, Meta - Colombia",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start-demo": "node server-demo.js",
+    "start-real": "node server-real.js",
+    "dev": "nodemon server.js",
+    "dev-real": "nodemon server-real.js",
+    "test-google": "node test-google-api.js",
+    "test-places": "node test-places-api.js",
+    "test-quota": "node test-quota-system.js",
+    "test-hybrid": "node test-hybrid-system.js",
+    "sync-businesses": "node scripts/sync-businesses.js",
+    "init-admin": "node init-admin-demo.js"
+  },
+  "dependencies": {
+    "axios": "^1.5.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.7.0",
+    "google-auth-library": "^9.0.0",
+    "googleapis": "^126.0.1",
+    "helmet": "^7.0.0",
+    "node-cron": "^3.0.2",
+    "pg": "^8.11.0",
+    "qrcode": "^1.5.3",
+    "sequelize": "^6.32.1",
+    "slugify": "^1.6.6",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "directory",
+    "business",
+    "google-business-profile",
+    "acacias",
+    "colombia"
+  ],
+  "author": "Alcaldía de Acacías",
+  "license": "MIT"
+}

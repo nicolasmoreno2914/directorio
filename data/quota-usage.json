@@ -1,0 +1,49 @@
+{
+  "current_month": 6,
+  "current_year": 2025,
+  "monthly_usage": {
+    "nearby_search": 1,
+    "place_details": 5,
+    "place_photos": 0
+  },
+  "daily_usage": {
+    "2025-07-28": {
+      "nearby_search": 1,
+      "place_details": 5,
+      "place_photos": 0
+    }
+  },
+  "total_requests": 6,
+  "estimated_cost": 0,
+  "last_reset": "2025-07-28T20:20:51.032Z",
+  "sync_history": [
+    {
+      "timestamp": "2025-07-28T20:20:51.166Z",
+      "type": "nearby_search",
+      "quantity": 1,
+      "metadata": {
+        "test": true,
+        "location": "Acacías, Meta"
+      },
+      "monthly_total": 1,
+      "daily_total": 1
+    },
+    {
+      "timestamp": "2025-07-28T20:20:51.171Z",
+      "type": "place_details",
+      "quantity": 5,
+      "metadata": {
+        "test": true,
+        "businesses": [
+          "test1",
+          "test2",
+          "test3",
+          "test4",
+          "test5"
+        ]
+      },
+      "monthly_total": 5,
+      "daily_total": 5
+    }
+  ]
+}

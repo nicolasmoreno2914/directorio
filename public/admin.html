@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Yo Compro Acacías</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Pantalla de Login -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <i class="fas fa-shield-alt"></i>
+                <h1>Panel de Administración</h1>
+                <p>Yo Compro Acacías</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i>
+                        Contraseña de Administrador
+                    </label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Iniciar Sesión
+                </button>
+                
+                <div id="loginError" class="error-message" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Principal -->
+    <div id="adminDashboard" class="dashboard" style="display: none;">
+        <!-- Header del Dashboard -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1><i class="fas fa-tachometer-alt"></i> Panel de Administración</h1>
+                <span class="subtitle">Yo Compro Acacías</span>
+            </div>
+            <div class="header-right">
+                <span class="admin-info">
+                    <i class="fas fa-user-shield"></i>
+                    Administrador
+                </span>
+                <button id="logoutBtn" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </header>
+
+        <!-- Navegación de Pestañas -->
+        <nav class="dashboard-nav">
+            <button class="nav-tab active" data-tab="overview">
+                <i class="fas fa-chart-line"></i>
+                Resumen
+            </button>
+            <button class="nav-tab" data-tab="businesses">
+                <i class="fas fa-store"></i>
+                Negocios
+            </button>
+            <button class="nav-tab" data-tab="quota">
+                <i class="fas fa-chart-pie"></i>
+                Cuotas API
+            </button>
+            <button class="nav-tab" data-tab="google-mb">
+                <i class="fab fa-google"></i>
+                Google My Business
+            </button>
+            <button class="nav-tab" data-tab="sync">
+                <i class="fas fa-sync-alt"></i>
+                Sincronización
+            </button>
+            <button class="nav-tab" data-tab="settings">
+                <i class="fas fa-cog"></i>
+                Configuración
+            </button>
+        </nav>
+
+        <!-- Contenido del Dashboard -->
+        <main class="dashboard-content">
+            <!-- Pestaña Resumen -->
+            <div id="overviewTab" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalBusinesses">-</h3>
+                            <p>Total Negocios</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="visibleBusinesses">-</h3>
+                            <p>Negocios Visibles</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="apiRequests">-</h3>
+                            <p>Requests API (Mes)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="estimatedCost">$0.00</h3>
+                            <p>Costo Estimado</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h2><i class="fas fa-history"></i> Actividad Reciente</h2>
+                    <div id="recentActivity" class="activity-list">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña Negocios -->
+            <div id="businessesTab" class="tab-content">
+                <div class="businesses-header">
+                    <h2><i class="fas fa-store"></i> Gestión de Negocios</h2>
+                    <div class="businesses-controls">
+                        <button id="refreshBusinesses" class="btn btn-secondary">
+                            <i class="fas fa-refresh"></i>
+                            Actualizar
+                        </button>
+                        <div class="filter-controls">
+                            <select id="businessFilter">
+                                <option value="all">Todos los negocios</option>
+                                <option value="visible">Solo visibles</option>
+                                <option value="hidden">Solo ocultos</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="businesses-list">
+                    <div id="businessesGrid" class="businesses-grid">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña Cuotas API -->
+            <div id="quotaTab" class="tab-content">
+                <div class="quota-header">
+                    <h2><i class="fas fa-chart-pie"></i> Control de Cuotas API</h2>
+                    <button id="refreshQuota" class="btn btn-secondary">
+                        <i class="fas fa-refresh"></i>
+                        Actualizar
+                    </button>
+                </div>
+
+                <div class="quota-stats">
+                    <div class="quota-section">
+                        <h3>Uso Mensual</h3>
+                        <div id="monthlyQuota" class="quota-bars">
+                            <!-- Se llenará dinámicamente -->
+                        </div>
+                    </div>
+
+                    <div class="quota-section">
+                        <h3>Uso Diario</h3>
+                        <div id="dailyQuota" class="quota-bars">
+                            <!-- Se llenará dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quota-controls">
+                    <h3>Configurar Límites</h3>
+                    <form id="quotaLimitsForm" class="limits-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Búsquedas Mensuales</label>
+                                <input type="number" id="monthlySearchLimit" min="1" max="1000">
+                            </div>
+                            <div class="form-group">
+                                <label>Detalles Mensuales</label>
+                                <input type="number" id="monthlyDetailsLimit" min="1" max="1000">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Búsquedas Diarias</label>
+                                <input type="number" id="dailySearchLimit" min="1" max="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Detalles Diarios</label>
+                                <input type="number" id="dailyDetailsLimit" min="1" max="100">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Guardar Límites
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Pestaña Sincronización -->
+            <div id="syncTab" class="tab-content">
+                <div class="sync-header">
+                    <h2><i class="fas fa-sync-alt"></i> Sincronización con Google</h2>
+                </div>
+
+                <div class="sync-status">
+                    <div class="status-card">
+                        <h3>Estado de la Sincronización</h3>
+                        <div id="syncStatus" class="status-info">
+                            <span class="status-indicator unknown"></span>
+                            <span>Verificando...</span>
+                        </div>
+                        <div id="lastSync" class="last-sync">
+                            Última sincronización: Nunca
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sync-controls">
+                    <div class="sync-check">
+                        <h3>Verificar Disponibilidad</h3>
+                        <p>Verifica si se puede realizar una sincronización sin exceder límites de cuota.</p>
+                        <button id="checkSyncBtn" class="btn btn-secondary">
+                            <i class="fas fa-search"></i>
+                            Verificar Disponibilidad
+                        </button>
+                        <div id="syncCheckResult" class="check-result"></div>
+                    </div>
+
+                    <div class="sync-execute">
+                        <h3>Ejecutar Sincronización</h3>
+                        <p class="warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Esta acción consumirá requests de tu cuota de Google Places API.
+                        </p>
+                        <button id="executeSyncBtn" class="btn btn-danger" disabled>
+                            <i class="fas fa-sync-alt"></i>
+                            Ejecutar Sincronización
+                        </button>
+                        <div id="syncResult" class="sync-result"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña Google My Business -->
+            <div id="google-mbTab" class="tab-content">
+                <div class="gmb-header">
+                    <h2><i class="fab fa-google"></i> Integración Google My Business</h2>
+                    <p class="gmb-description">Conecta con Google My Business para obtener perfiles sociales reales de los negocios</p>
+                </div>
+
+                <div class="gmb-sections">
+                    <!-- Estado de Conexión -->
+                    <div class="gmb-section">
+                        <h3><i class="fas fa-link"></i> Estado de Conexión</h3>
+                        <div class="connection-status">
+                            <div id="gmbConnectionStatus" class="status-card">
+                                <div class="status-indicator disconnected"></div>
+                                <div class="status-info">
+                                    <h4>No Conectado</h4>
+                                    <p>Conecta tu cuenta de Google My Business para acceder a datos reales</p>
+                                </div>
+                                <button id="connectGmbBtn" class="btn btn-primary">
+                                    <i class="fab fa-google"></i>
+                                    Conectar con Google
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuración de APIs -->
+                    <div class="gmb-section">
+                        <h3><i class="fas fa-cog"></i> Configuración de APIs</h3>
+                        <div class="api-config">
+                            <div class="api-item">
+                                <label>Places API (New)</label>
+                                <div id="placesApiStatus" class="api-status">
+                                    <span class="status-indicator unknown"></span>
+                                    <span>Verificando...</span>
+                                </div>
+                                <button id="testPlacesApi" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-test-tube"></i>
+                                    Probar
+                                </button>
+                            </div>
+                            <div class="api-item">
+                                <label>My Business Business Information API</label>
+                                <div id="businessInfoApiStatus" class="api-status">
+                                    <span class="status-indicator unknown"></span>
+                                    <span>Verificando...</span>
+                                </div>
+                                <button id="testBusinessInfoApi" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-test-tube"></i>
+                                    Probar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Búsqueda y Pruebas -->
+                    <div class="gmb-section">
+                        <h3><i class="fas fa-search"></i> Búsqueda de Negocios</h3>
+                        <div class="search-section">
+                            <form id="businessSearchForm" class="search-form">
+                                <div class="form-group">
+                                    <label>Buscar Negocio</label>
+                                    <input type="text" id="businessSearchQuery" placeholder="Ej: Restaurante Acacías Meta" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i>
+                                    Buscar en Google
+                                </button>
+                            </form>
+                            <div id="searchResults" class="search-results"></div>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas de Integración -->
+                    <div class="gmb-section">
+                        <h3><i class="fas fa-chart-bar"></i> Estadísticas</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="socialProfilesCount">0</div>
+                                <div class="stat-label">Perfiles Sociales Obtenidos</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="apiCallsToday">0</div>
+                                <div class="stat-label">Llamadas API Hoy</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="lastSyncTime">Nunca</div>
+                                <div class="stat-label">Última Sincronización</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Acciones Rápidas -->
+                    <div class="gmb-section">
+                        <h3><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
+                        <div class="quick-actions">
+                            <button id="syncAllSocialProfiles" class="btn btn-warning" disabled>
+                                <i class="fas fa-sync-alt"></i>
+                                Sincronizar Todos los Perfiles Sociales
+                            </button>
+                            <button id="testGmbIntegration" class="btn btn-info">
+                                <i class="fas fa-vial"></i>
+                                Probar Integración Completa
+                            </button>
+                            <button id="disconnectGmb" class="btn btn-danger" disabled>
+                                <i class="fas fa-unlink"></i>
+                                Desconectar Google My Business
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña Configuración -->
+            <div id="settingsTab" class="tab-content">
+                <div class="settings-header">
+                    <h2><i class="fas fa-cog"></i> Configuración del Sistema</h2>
+                </div>
+
+                <div class="settings-sections">
+                    <div class="setting-section">
+                        <h3>Configuración de API</h3>
+                        <div class="setting-item">
+                            <label>Estado de Google Places API</label>
+                            <div id="apiStatus" class="api-status">
+                                <span class="status-indicator unknown"></span>
+                                <span>Verificando...</span>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label>Facturación Habilitada</label>
+                            <div id="billingStatus" class="billing-status">
+                                <span class="status-indicator unknown"></span>
+                                <span>Verificando...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-section">
+                        <h3>Configuración de Búsqueda</h3>
+                        <form id="searchConfigForm" class="config-form">
+                            <div class="form-group">
+                                <label>Radio de Búsqueda (km)</label>
+                                <input type="number" id="searchRadius" min="1" max="50" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label>Máximo Negocios por Sync</label>
+                                <input type="number" id="maxBusinesses" min="10" max="500" value="100">
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                Guardar Configuración
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modales -->
+    <div id="confirmModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Confirmar Acción</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage">¿Estás seguro de realizar esta acción?</p>
+            </div>
+            <div class="modal-footer">
+                <button id="modalCancel" class="btn btn-secondary">Cancelar</button>
+                <button id="modalConfirm" class="btn btn-primary">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Procesando...</p>
+        </div>
+    </div>
+
+    <script src="js/google-auth.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

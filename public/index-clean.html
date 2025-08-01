@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yo Compro Acacías - Directorio Comercial</title>
+    <meta name="description" content="Descubre y apoya los negocios locales de Acacías, Meta">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .section {
+            padding: 3rem 0;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #333;
+        }
+        
+        .businesses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .business-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .business-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        
+        .business-image {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+        
+        .business-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .business-info {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .business-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .business-category {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .business-address {
+            color: #888;
+            font-size: 0.85rem;
+            flex: 1;
+            margin-bottom: 1rem;
+        }
+        
+        .business-rating {
+            color: #f39c12;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #666;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🏪 Yo Compro Acacías</h1>
+            <p class="subtitle">Directorio Comercial Oficial - Descubre y Apoya los Negocios Locales</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="section">
+            <div class="container">
+                <h2 class="section-title">Todos los Negocios</h2>
+                <p style="text-align: center; color: #666; margin-bottom: 2rem;">
+                    Descubre todos los negocios de Acacías registrados en nuestro directorio
+                </p>
+                
+                <div id="businessesContainer" class="businesses-grid">
+                    <div class="loading">🔄 Cargando negocios con imágenes reales...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        console.log('🚀 SOLUCIÓN DEFINITIVA INICIANDO...');
+        
+        // Esperar a que el DOM esté completamente cargado
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOM cargado, iniciando carga de negocios');
+            loadBusinesses();
+        });
+        
+        async function loadBusinesses() {
+            const container = document.getElementById('businessesContainer');
+            
+            try {
+                console.log('📡 Cargando desde /api/businesses...');
+                const response = await fetch('/api/businesses');
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const businesses = data.businesses || data;
+                
+                console.log(`✅ Cargados ${businesses.length} negocios`);
+                
+                if (!businesses || businesses.length === 0) {
+                    container.innerHTML = '<div class="error">❌ No se encontraron negocios</div>';
+                    return;
+                }
+                
+                renderBusinesses(businesses, container);
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                container.innerHTML = `<div class="error">❌ Error cargando negocios: ${error.message}</div>`;
+            }
+        }
+        
+        function renderBusinesses(businesses, container) {
+            console.log('🎨 Renderizando negocios...');
+            
+            let withImages = 0;
+            let withoutImages = 0;
+            
+            const html = businesses.map(business => {
+                const id = business.business_id || business.id || 'unknown';
+                const name = business.nombre_negocio || business.name || 'Negocio Local';
+                const category = business.categoria_principal || business.categoria || 'General';
+                const address = business.direccion || business.address || 'Acacías, Meta';
+                const rating = business.calificacion_promedio || '';
+                
+                let imageHTML = '';
+                let hasRealImage = false;
+                
+                // Extraer imagen real de Google My Business
+                if (business.imagenes) {
+                    try {
+                        let images = business.imagenes;
+                        
+                        if (typeof images === 'string') {
+                            images = JSON.parse(images);
+                        }
+                        
+                        if (Array.isArray(images) && images.length > 0) {
+                            const firstImage = images[0];
+                            const imageUrl = typeof firstImage === 'object' ? firstImage.url : firstImage;
+                            
+                            if (imageUrl && imageUrl.includes('googleapis.com')) {
+                                hasRealImage = true;
+                                withImages++;
+                                console.log(`🖼️ ${name}: Imagen real encontrada`);
+                                
+                                imageHTML = `<img src="${imageUrl}" alt="${name}" onerror="this.parentElement.innerHTML='🏪';">`;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn(`⚠️ Error parseando imágenes para ${name}:`, e);
+                    }
+                }
+                
+                if (!hasRealImage) {
+                    withoutImages++;
+                    imageHTML = '🏪';
+                }
+                
+                return `
+                    <div class="business-card" onclick="window.location.href='/negocio/${id}'">
+                        <div class="business-image">
+                            ${imageHTML}
+                        </div>
+                        <div class="business-info">
+                            <h3 class="business-name">${name}</h3>
+                            <p class="business-category">${category}</p>
+                            <p class="business-address">📍 ${address}</p>
+                            ${rating ? `<div class="business-rating">⭐ ${rating}</div>` : '<div class="business-rating">⭐⭐⭐⭐⭐</div>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            container.innerHTML = html;
+            
+            console.log('📊 ESTADÍSTICAS:');
+            console.log(`✅ Con imágenes reales: ${withImages}`);
+            console.log(`🏪 Con fallback: ${withoutImages}`);
+            console.log(`📋 Total: ${businesses.length}`);
+            console.log('🎉 RENDERIZADO COMPLETADO');
+        }
+        
+        console.log('✅ Script cargado exitosamente');
+    </script>
+</body>
+</html>

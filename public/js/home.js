@@ -62,7 +62,7 @@ class HomePage {
     renderBusinessesOptimized(businesses) {
         console.log('🎨 Rendering businesses optimized...');
         
-        const container = document.getElementById('businessGrid');
+        const container = document.getElementById('allBusinessesGrid');
         if (!container) {
             console.error('❌ Business grid container not found');
             return;
@@ -128,7 +128,7 @@ class HomePage {
     }
 
     showErrorMessage(message) {
-        const container = document.getElementById('businessGrid');
+        const container = document.getElementById('allBusinessesGrid');
         if (container) {
             container.innerHTML = `
                 <div class="error-message" style="color: red; text-align: center; padding: 20px;">

@@ -1,171 +1,199 @@
-// HOME.JS - VERSIÓN LIMPIA CON OPTIMIZACIÓN DE SCROLL Y IMÁGENES REALES
-(function() {
-    'use strict';
-    
-    // Variables globales
-    let allBusinesses = [];
-    let isLoading = false;
-    
-    // OPTIMIZACIÓN DE SCROLL - APLICAR INMEDIATAMENTE
-    function optimizeScrollPerformance() {
-        // Eliminar scroll suave y animaciones que causan trabado
-        document.documentElement.style.scrollBehavior = 'auto';
-        document.body.style.scrollBehavior = 'auto';
+// Simplified Home page functionality
+class HomePage {
+    constructor() {
+        // Prevent multiple initializations
+        if (window.homePageInitialized) {
+            console.log('⚠️ HomePage already initialized');
+            return window.homePageInstance;
+        }
         
-        // Aplicar estilos de optimización
-        const style = document.createElement('style');
-        style.textContent = `
-            /* OPTIMIZACIÓN EXTREMA DE SCROLL */
-            * {
-                scroll-behavior: auto !important;
-            }
-            
-            .business-card {
-                transition: none !important;
-                transform: none !important;
-                will-change: auto !important;
-            }
-            
-            .business-card:hover {
-                transform: none !important;
-                transition: none !important;
-                animation: none !important;
-            }
-            
-            .category-card,
-            .featured-item {
-                transition: none !important;
-                transform: none !important;
-                will-change: auto !important;
-            }
-            
-            img {
-                will-change: auto !important;
-                transform: translateZ(0);
-            }
-        `;
-        document.head.appendChild(style);
+        console.log('🚀 Initializing HomePage...');
         
-        console.log('✅ Optimización de scroll aplicada');
+        this.app = window.YoComproAcacias;
+        this.currentPage = 1;
+        this.isLoading = false;
+        this.hasLoadedInitialData = false;
+        
+        window.homePageInitialized = true;
+        window.homePageInstance = this;
+        
+        // Simple initialization without complex async operations
+        this.simpleInit();
+    }
+
+    simpleInit() {
+        console.log('🔧 Simple initialization starting...');
+        
+        // Inicializar optimizaciones de scroll
+        this.optimizeScrollPerformance();
+        
+        // Only load data once
+        if (!this.hasLoadedInitialData) {
+            this.hasLoadedInitialData = true;
+            this.loadBusinessesOnce();
+        }
+        
+        console.log('✅ Simple initialization complete');
     }
     
-    // Cargar negocios desde la API
-    async function loadBusinesses() {
-        if (isLoading) return;
-        isLoading = true;
-        
+    async loadBusinessesOnce() {
         try {
-            console.log('🔄 Cargando negocios...');
-            const response = await fetch('/api/businesses');
+            console.log('📊 Loading businesses once...');
             
-            if (!response.ok) {
-                throw new Error(`Error HTTP: ${response.status}`);
+            // CARGAR CANTIDAD MODERADA PARA SCROLL FLUIDO
+            const response = await fetch('/api/businesses?page=1&limit=24');
+            const data = await response.json();
+            
+            if (data && data.data) {
+                console.log(`✅ Loaded ${data.data.length} businesses`);
+                this.renderBusinessesOptimized(data.data);
+            } else if (data && Array.isArray(data)) {
+                console.log(`✅ Loaded ${data.length} businesses`);
+                this.renderBusinessesOptimized(data);
+            } else {
+                console.log('⚠️ No businesses data found');
             }
-            
-            const businesses = await response.json();
-            console.log(`✅ Cargados ${businesses.length} negocios`);
-            
-            allBusinesses = businesses;
-            renderBusinesses(businesses);
-            
         } catch (error) {
-            console.error('❌ Error cargando negocios:', error);
-            showMessage('Error cargando negocios. Intenta recargar la página.', '#ff6b6b');
-        } finally {
-            isLoading = false;
+            console.error('❌ Error loading businesses:', error);
+            this.showErrorMessage('Error cargando negocios: ' + error.message);
         }
     }
-    
-    // Renderizar negocios con imágenes reales de Google My Business
-    function renderBusinesses(businesses) {
-        const container = document.getElementById('businesses-container');
+
+    renderBusinessesOptimized(businesses) {
+        console.log('🎨 Rendering businesses optimized...');
+        
+        const container = document.getElementById('businessGrid');
         if (!container) {
-            console.error('❌ Container de negocios no encontrado');
+            console.error('❌ Business grid container not found');
             return;
         }
-        
+
         if (!businesses || businesses.length === 0) {
-            container.innerHTML = '<p class="no-results">No se encontraron negocios</p>';
+            container.innerHTML = `
+                <div class="no-results">
+                    <p>No se encontraron negocios</p>
+                </div>
+            `;
             return;
         }
-        
-        console.log(`🎯 Renderizando ${businesses.length} negocios`);
-        
-        const html = businesses.map(business => {
-            // Obtener la primera imagen real de Google My Business
-            let imageHTML = '';
-            
-            if (business.imagenes && business.imagenes.length > 0) {
-                // Parsear JSON si es string
-                let images = business.imagenes;
-                if (typeof images === 'string') {
-                    try {
-                        images = JSON.parse(images);
-                    } catch (e) {
-                        console.warn('Error parseando imágenes:', e);
-                        images = [];
-                    }
-                }
-                
-                // Usar la primera imagen disponible
-                if (Array.isArray(images) && images.length > 0) {
-                    const firstImage = images[0];
-                    const imageUrl = typeof firstImage === 'object' ? firstImage.url : firstImage;
-                    
-                    if (imageUrl) {
-                        imageHTML = `<img src="${imageUrl}" alt="${business.nombre_negocio}" class="business-image" loading="eager">`;
-                    }
-                }
-            }
-            
-            // Si no hay imagen, usar gradiente verde como fallback
-            if (!imageHTML) {
-                imageHTML = '<div class="business-icon">🏪</div>';
-            }
+
+        // Render businesses with optimized HTML
+        const businessCards = businesses.map(business => {
+            const images = this.parseImages(business.imagenes);
+            const firstImage = images && images.length > 0 ? images[0] : null;
             
             return `
-                <div class="business-card" onclick="window.location.href='/negocio/${business.business_id}'">
-                    <div class="business-image-container">
-                        ${imageHTML}
+                <div class="business-card" onclick="window.location.href='/negocio/${business.id}'">
+                    <div class="business-image">
+                        ${firstImage ? 
+                            `<img src="${firstImage}" alt="${business.nombre_negocio}" loading="lazy" onerror="this.style.display='none'; this.parentElement.style.backgroundColor='#4CAF50';">` :
+                            `<div class="business-icon" style="background-color: #4CAF50;">📍</div>`
+                        }
                     </div>
                     <div class="business-info">
                         <h3 class="business-name">${business.nombre_negocio}</h3>
-                        <p class="business-category">${business.categoria_principal || 'Sin categoría'}</p>
-                        <p class="business-address">${business.direccion || 'Sin dirección'}</p>
-                        ${business.calificacion_promedio ? `<div class="business-rating">⭐ ${business.calificacion_promedio}</div>` : ''}
+                        <p class="business-category">${business.categoria || 'Sin categoría'}</p>
+                        <p class="business-address">${business.direccion || 'Dirección no disponible'}</p>
+                        ${business.calificacion ? `
+                            <div class="business-rating">
+                                <span class="stars">${'⭐'.repeat(Math.floor(business.calificacion))}</span>
+                                <span class="rating-number">${business.calificacion}</span>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
         }).join('');
-        
-        container.innerHTML = html;
-        console.log('✅ Negocios renderizados exitosamente');
+
+        container.innerHTML = businessCards;
+        console.log(`✅ Rendered ${businesses.length} business cards`);
     }
-    
-    // Mostrar mensaje al usuario
-    function showMessage(message, color = '#4CAF50') {
-        console.log(`📢 ${message}`);
-        // Implementar toast notification si es necesario
-    }
-    
-    // Inicializar la aplicación
-    function initializeApp() {
-        console.log('🚀 Inicializando aplicación...');
+
+    parseImages(imageData) {
+        if (!imageData) return [];
         
-        // Aplicar optimizaciones de scroll inmediatamente
-        optimizeScrollPerformance();
+        try {
+            if (typeof imageData === 'string') {
+                // Try to parse as JSON
+                const parsed = JSON.parse(imageData);
+                return Array.isArray(parsed) ? parsed : [parsed];
+            } else if (Array.isArray(imageData)) {
+                return imageData;
+            }
+        } catch (error) {
+            console.log('Could not parse images:', error);
+        }
         
-        // Cargar negocios
-        loadBusinesses();
+        return [];
+    }
+
+    showErrorMessage(message) {
+        const container = document.getElementById('businessGrid');
+        if (container) {
+            container.innerHTML = `
+                <div class="error-message" style="color: red; text-align: center; padding: 20px;">
+                    <p>❌ ${message}</p>
+                </div>
+            `;
+        }
+    }
+
+    optimizeScrollPerformance() {
+        // Aplicar optimizaciones de scroll
+        document.documentElement.style.scrollBehavior = 'auto';
+        document.body.style.scrollBehavior = 'auto';
         
-        console.log('✅ Aplicación inicializada');
+        // Desactivar smooth scroll en todos los elementos
+        const style = document.createElement('style');
+        style.textContent = `
+            * {
+                scroll-behavior: auto !important;
+                -webkit-overflow-scrolling: auto !important;
+            }
+            
+            .business-card {
+                transition: none !important;
+                will-change: auto !important;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        console.log('⚡ Scroll performance optimized');
     }
-    
-    // Inicializar cuando el DOM esté listo
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeApp);
-    } else {
-        initializeApp();
+
+    async loadStats() {
+        try {
+            const stats = await this.app.getStats();
+            this.renderStats(stats.resumen);
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
     }
-    
-})();
+
+    renderStats(stats) {
+        // Render stats if needed
+        console.log('📊 Stats loaded:', stats);
+    }
+}
+
+// Initialize HomePage when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!window.homePageInitialized) {
+            new HomePage();
+        }
+    });
+} else {
+    // DOM is already ready
+    if (!window.homePageInitialized) {
+        new HomePage();
+    }
+}
+
+// Simple global functions
+function navigateToCategory(categoryName) {
+    console.log('Navigating to category:', categoryName);
+    // Add category navigation logic here
+}
+
+console.log('✅ Home.js loaded successfully');

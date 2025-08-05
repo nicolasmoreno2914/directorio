@@ -14,9 +14,9 @@ function getRealBusinessesData() {
       horarios: "24 horas",
       calificacion: 4.2,
       imagenes: JSON.stringify([
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=AelY_CuHW8cHjJJRHKVW8SzIgTgE7vP9mPIJ7lEg",
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=AelY_CuHW8cHjJJRHKVW8SzIgTgE7vP9mPIJ7lEh",
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=AelY_CuHW8cHjJJRHKVW8SzIgTgE7vP9mPIJ7lEi"
+        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+        "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800",
+        "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800"
       ]),
       visible_en_directorio: 1,
       lat: 3.9889,
@@ -31,8 +31,8 @@ function getRealBusinessesData() {
       horarios: "Lunes a Sábado: 7:00 AM - 8:00 PM",
       calificacion: 4.0,
       imagenes: JSON.stringify([
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=BelY_CuHW8cHjJJRHKVW8SzIgTgE7vP9mPIJ7lEg",
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=BelY_CuHW8cHjJJRHKVW8SzIgTgE7vP9mPIJ7lEh"
+        "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800",
+        "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=800"
       ]),
       visible_en_directorio: 1,
       lat: 3.9895,
@@ -47,10 +47,10 @@ function getRealBusinessesData() {
       horarios: "Lunes a Domingo: 6:00 AM - 9:00 PM",
       calificacion: 4.5,
       imagenes: JSON.stringify([
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=CelY_CuHW8cHjJJRHKVW8SzIgTgE7vP9mPIJ7lEg",
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=CelY_CuHW8cHjJJRHKVW8SzIgTgE7vP9mPIJ7lEh",
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=CelY_CuHW8cHjJJRHKVW8SzIgTgE7vP9mPIJ7lEi",
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=CelY_CuHW8cHjJJRHKVW8SzIgTgE7vP9mPIJ7lEj"
+        "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800",
+        "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800",
+        "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800",
+        "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800"
       ]),
       visible_en_directorio: 1,
       lat: 3.9901,
@@ -65,8 +65,8 @@ function getRealBusinessesData() {
       horarios: "Martes a Sábado: 8:00 AM - 6:00 PM",
       calificacion: 4.3,
       imagenes: JSON.stringify([
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=DelY_CuHW8cHjJJRHKVW8SzIgTgE7vP9mPIJ7lEg",
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=DelY_CuHW8cHjJJRHKVW8SzIgTgE7vP9mPIJ7lEh"
+        "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=800",
+        "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800"
       ]),
       visible_en_directorio: 1,
       lat: 3.9883,
@@ -81,7 +81,7 @@ function getRealBusinessesData() {
       horarios: "Lunes a Sábado: 7:00 AM - 6:00 PM",
       calificacion: 4.1,
       imagenes: JSON.stringify([
-        "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=EelY_CuHW8cHjJJRHKVW8SzIgTgE7vP9mPIJ7lEg"
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800"
       ]),
       visible_en_directorio: 1,
       lat: 3.9897,

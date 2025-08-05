@@ -228,7 +228,10 @@ function renderPage(pageNumber, container) {
 function addPaginationControls(container) {
     const totalPages = Math.ceil(allBusinesses.length / businessesPerPage);
     
+    console.log(`🔢 Agregando controles de paginación: ${totalPages} páginas, ${allBusinesses.length} negocios`);
+    
     if (totalPages <= 1) {
+        console.log('⚠️ Solo 1 página, no se muestran controles');
         return; // No mostrar paginación si solo hay una página
     }
     
@@ -271,8 +274,16 @@ function addPaginationControls(container) {
         </div>
     `;
     
+    // Remover controles anteriores si existen
+    const existingPagination = document.querySelector('.pagination-controls');
+    if (existingPagination) {
+        console.log('🗑️ Removiendo controles de paginación anteriores');
+        existingPagination.remove();
+    }
+    
     // Agregar paginación después del contenedor
     container.insertAdjacentHTML('afterend', paginationHTML);
+    console.log('✅ Controles de paginación agregados exitosamente');
     
     // Agregar event listeners
     const prevBtn = document.getElementById('prevPage');
@@ -280,21 +291,27 @@ function addPaginationControls(container) {
     
     if (prevBtn && !prevBtn.disabled) {
         prevBtn.addEventListener('click', () => {
+            console.log('⬅️ Navegando a página anterior:', currentPage - 1);
             // Remover paginación anterior
             const oldPagination = document.querySelector('.pagination-controls');
             if (oldPagination) oldPagination.remove();
             
             renderPage(currentPage - 1, container);
+            // Scroll suave al inicio de la sección
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
     
     if (nextBtn && !nextBtn.disabled) {
         nextBtn.addEventListener('click', () => {
+            console.log('➡️ Navegando a página siguiente:', currentPage + 1);
             // Remover paginación anterior
             const oldPagination = document.querySelector('.pagination-controls');
             if (oldPagination) oldPagination.remove();
             
             renderPage(currentPage + 1, container);
+            // Scroll suave al inicio de la sección
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
 }

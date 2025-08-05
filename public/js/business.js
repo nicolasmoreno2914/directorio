@@ -32,9 +32,11 @@ function initBusinessPage() {
 }
 
 function getBusinessIdFromUrl() {
-    const path = window.location.pathname;
-    const matches = path.match(/\/negocio\/(.+)/);
-    return matches ? matches[1] : null;
+    // Leer parámetro 'id' de la URL (?id=valor)
+    const urlParams = new URLSearchParams(window.location.search);
+    const businessId = urlParams.get('id');
+    console.log(`🔍 Extrayendo ID de URL: ${businessId}`);
+    return businessId;
 }
 
 async function loadBusinessData() {

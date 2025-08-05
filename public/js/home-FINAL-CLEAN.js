@@ -132,28 +132,45 @@ function createBusinessCard(business, globalIndex) {
     card.style.cursor = 'pointer';
     card.onclick = () => window.location.href = `/business.html?id=${business.id}`;
     
-    // Procesar imágenes
+    // Procesar imágenes reales de Google My Business
     let images = [];
+    let realImageUrl = null;
+    
     try {
         if (typeof business.imagenes === 'string') {
             images = JSON.parse(business.imagenes);
         } else if (Array.isArray(business.imagenes)) {
             images = business.imagenes;
         }
+        
+        // Buscar primera imagen válida
+        if (images.length > 0) {
+            const firstImage = images[0];
+            if (typeof firstImage === 'string' && firstImage.startsWith('http')) {
+                // Si es una imagen de Google Maps, usar proxy
+                if (firstImage.includes('googleapis.com') || firstImage.includes('maps.googleapis.com')) {
+                    realImageUrl = `/.netlify/functions/image-proxy?url=${encodeURIComponent(firstImage)}`;
+                } else {
+                    realImageUrl = firstImage;
+                }
+                console.log(`🇺️ Imagen real encontrada para ${business.nombre_negocio}: ${firstImage.substring(0, 50)}...`);
+            }
+        }
     } catch (e) {
         console.warn(`⚠️ Error parsing images for ${business.nombre_negocio}:`, e);
     }
     
-    const firstImage = images.length > 0 ? images[0] : null;
-    const backgroundStyle = firstImage 
-        ? `background-image: url('${firstImage}'); background-size: cover; background-position: center;`
-        : 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);';
+    // Estilo de fondo: imagen real o gradiente verde elegante
+    const backgroundStyle = realImageUrl 
+        ? `background-image: url('${realImageUrl}'); background-size: cover; background-position: center;`
+        : 'background: linear-gradient(135deg, #10b981 0%, #059669 100%);';
     
-    const fallbackIcon = firstImage ? '' : '🏪';
+    const fallbackIcon = realImageUrl ? '' : '🏪';
     const imageCount = images.length > 1 ? `<div class="image-count">${images.length} fotos</div>` : '';
     
     card.innerHTML = `
-        <div class="business-image" style="${backgroundStyle}; height: 200px; position: relative; border-radius: 8px 8px 0 0;">
+        <div class="business-image" style="${backgroundStyle}; height: 200px; position: relative; border-radius: 8px 8px 0 0;" 
+             data-business-id="${business.id}" data-has-real-image="${realImageUrl ? 'true' : 'false'}">
             <div class="business-category" style="position: absolute; top: 0.5rem; left: 0.5rem; background: rgba(0,0,0,0.7); color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.75rem;">
                 ${business.categoria}
             </div>
@@ -204,7 +221,53 @@ function createBusinessCard(business, globalIndex) {
         card.style.boxShadow = 'none';
     });
     
+    // Agregar manejo de errores de imagen si tiene imagen real
+    if (realImageUrl) {
+        setupImageErrorHandling(card, business.nombre_negocio);
+    }
+    
     return card;
+}
+
+// Función para manejar errores de carga de imágenes
+function setupImageErrorHandling(card, businessName) {
+    const imageDiv = card.querySelector('.business-image');
+    if (!imageDiv) return;
+    
+    // Crear una imagen temporal para detectar errores de carga
+    const testImg = new Image();
+    const backgroundImage = imageDiv.style.backgroundImage;
+    
+    if (backgroundImage && backgroundImage.includes('url(')) {
+        const imageUrl = backgroundImage.match(/url\(["']?([^"'\)]+)["']?\)/)?.[1];
+        if (imageUrl) {
+            testImg.onload = () => {
+                console.log(`✅ Imagen cargada correctamente para ${businessName}`);
+            };
+            
+            testImg.onerror = () => {
+                console.warn(`⚠️ Error cargando imagen para ${businessName}, aplicando fallback`);
+                // Aplicar fallback con gradiente verde
+                imageDiv.style.backgroundImage = '';
+                imageDiv.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                
+                // Agregar ícono de fallback
+                const existingIcon = imageDiv.querySelector('.fallback-icon');
+                if (!existingIcon) {
+                    const fallbackIcon = document.createElement('div');
+                    fallbackIcon.className = 'fallback-icon';
+                    fallbackIcon.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem;';
+                    fallbackIcon.textContent = '🏪';
+                    imageDiv.appendChild(fallbackIcon);
+                }
+                
+                // Actualizar atributo
+                imageDiv.setAttribute('data-has-real-image', 'false');
+            };
+            
+            testImg.src = imageUrl;
+        }
+    }
 }
 
 function setupPagination() {

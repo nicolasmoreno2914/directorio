@@ -1,5 +1,6 @@
 // 61 NEGOCIOS REALES DE ACACÍAS CON IMÁGENES DE GOOGLE MY BUSINESS
 // DATOS DIRECTOS PARA NETLIFY (SIN DEPENDENCIAS DE BASE DE DATOS)
+// UPDATED: 2025-08-05 - Fixed 502 error by removing SQLite dependencies
 
 function getRealBusinessesData() {
   console.log('🏪 Sirviendo 61 negocios reales de Acacías - VERSIÓN COMPLETA');

@@ -87,6 +87,24 @@
             border-radius: 12px;
             font-size: 0.75rem;
         }
+        .businesses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .business-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: white;
+            cursor: pointer;
+        }
+        .business-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -347,7 +365,7 @@
 </footer>
 
 <!-- Script principal que maneja toda la funcionalidad -->
-<script src="/js/home.js"></script>
+<script src="/js/home-FINAL-CLEAN.js"></script>
 
 </body>
 </html>

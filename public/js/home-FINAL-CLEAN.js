@@ -68,6 +68,13 @@ async function loadBusinesses() {
             setupPagination();
             updateCounter();
             
+            // Ocultar indicador de carga
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            if (loadingSpinner) {
+                loadingSpinner.style.display = 'none';
+                console.log('✅ Indicador de carga ocultado');
+            }
+            
         } else {
             throw new Error('Formato de datos inválido');
         }
@@ -83,6 +90,13 @@ async function loadBusinesses() {
                 </button>
             </div>
         `;
+        
+        // Ocultar indicador de carga también en caso de error
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'none';
+            console.log('✅ Indicador de carga ocultado (error)');
+        }
     } finally {
         isLoading = false;
     }

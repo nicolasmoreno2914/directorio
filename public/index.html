@@ -37,6 +37,57 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Estilos para paginación -->
+    <style>
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .pagination-btn:hover {
+            background: #f5f5f5;
+            border-color: #007bff;
+        }
+        .pagination-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pagination-ellipsis {
+            padding: 0.5rem;
+            color: #666;
+        }
+        .business-number {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .image-count {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 0.5rem;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -256,7 +307,17 @@
         
         <!-- Grid de negocios -->
         <div class="businesses-grid" id="allBusinessesGrid">
-            <!-- Los negocios se cargan dinámicamente por home-definitive.js -->
+            <!-- Los negocios se cargan dinámicamente por home.js -->
+        </div>
+        
+        <!-- Contador de negocios -->
+        <div class="business-counter" id="businessCounter" style="text-align: center; margin: 1rem 0; color: #666;">
+            <!-- Se actualiza dinámicamente -->
+        </div>
+        
+        <!-- Controles de paginación -->
+        <div class="pagination-container" id="pagination" style="display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 2rem 0;">
+            <!-- Se genera dinámicamente por home.js -->
         </div>
     </div>
 </section>

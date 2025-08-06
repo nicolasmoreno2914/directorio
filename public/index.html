@@ -331,6 +331,82 @@
     </div>
 </footer>
 
+<!-- OAuth2 Code Detection for Google My Business -->
+<script>
+// Detectar código de autorización OAuth2 en la URL
+const urlParams = new URLSearchParams(window.location.search);
+const authCode = urlParams.get('code');
+const error = urlParams.get('error');
+
+if (authCode || error) {
+    // Crear modal para mostrar el código
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        font-family: 'Inter', sans-serif;
+    `;
+    
+    const content = document.createElement('div');
+    content.style.cssText = `
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        max-width: 600px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    `;
+    
+    if (error) {
+        content.innerHTML = `
+            <h2 style="color: #dc3545; margin-bottom: 20px;">❌ Error de Autorización</h2>
+            <p style="margin-bottom: 20px;">Error: ${error}</p>
+            <button onclick="this.parentElement.parentElement.remove(); window.history.replaceState({}, document.title, window.location.pathname);" 
+                    style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                Cerrar
+            </button>
+        `;
+    } else {
+        content.innerHTML = `
+            <h2 style="color: #28a745; margin-bottom: 20px;">✅ Código de Autorización OAuth2</h2>
+            <div style="background: #f8f9fa; border: 2px solid #28a745; border-radius: 8px; padding: 20px; margin: 20px 0; font-family: 'Courier New', monospace; font-size: 16px; word-break: break-all; color: #333;" id="authCodeDisplay">
+                ${authCode}
+            </div>
+            <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; margin: 20px 0; text-align: left;">
+                <strong>📋 Instrucciones:</strong><br>
+                1. Copia el código de arriba<br>
+                2. Ve a tu terminal/consola<br>
+                3. Ejecuta: <code>node oauth2-gmb-integration.js ${authCode}</code>
+            </div>
+            <button onclick="navigator.clipboard.writeText('${authCode}'); this.textContent = '✅ Copiado!'; setTimeout(() => this.textContent = '📋 Copiar Código', 2000);" 
+                    style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px;">
+                📋 Copiar Código
+            </button>
+            <button onclick="navigator.clipboard.writeText('node oauth2-gmb-integration.js ${authCode}'); this.textContent = '✅ Copiado!'; setTimeout(() => this.textContent = '📋 Copiar Comando', 2000);" 
+                    style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px;">
+                📋 Copiar Comando
+            </button>
+            <button onclick="this.parentElement.parentElement.remove(); window.history.replaceState({}, document.title, window.location.pathname);" 
+                    style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px;">
+                Cerrar
+            </button>
+        `;
+    }
+    
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+}
+</script>
+
 <!-- Script principal que maneja toda la funcionalidad -->
 <script src="/js/home-FINAL-CLEAN.js"></script>
 

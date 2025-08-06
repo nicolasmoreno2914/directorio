@@ -25,6 +25,18 @@ html {
     text-rendering: optimizeSpeed;
 }
 
+/* ASEGURAR QUE EL FOOTER APAREZCA AL FINAL */
+.all-businesses-section {
+    margin-bottom: 0;
+}
+
+.footer {
+    margin-top: var(--spacing-16) !important;
+    position: relative !important;
+    z-index: 10 !important;
+    clear: both !important;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;

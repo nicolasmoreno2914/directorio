@@ -1,8 +1,8 @@
 // Google OAuth2 Integration for My Business API
-// Configuración OAuth2 (credenciales reales de Google Cloud Console)
-const GOOGLE_CONFIG = {
-    client_id: '931036097890-cnial8719f69ao0l1to7pgjcrr.apps.googleusercontent.com',
-    client_secret: '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',
+// Configuración OAuth2 (credenciales desde archivo externo para seguridad)
+const GOOGLE_CONFIG = window.GOOGLE_OAUTH_CONFIG || {
+    client_id: 'CLIENT_ID_PLACEHOLDER',
+    client_secret: 'CLIENT_SECRET_PLACEHOLDER',
     redirect_uri: 'https://directorioacacias.netlify.app/',
     scopes: [
         'https://www.googleapis.com/auth/business.manage',

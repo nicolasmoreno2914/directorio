@@ -1,268 +1,437 @@
-// Gestión de autenticación con Google My Business
-class GoogleAuthManager {
-  constructor() {
-    this.isAuthenticated = false;
-    this.accessToken = localStorage.getItem('google_access_token');
-    this.refreshToken = localStorage.getItem('google_refresh_token');
-    this.init();
-  }
+// Google OAuth2 Integration for My Business API
+// Configuración OAuth2 (usando las credenciales proporcionadas)
+const GOOGLE_CONFIG = {
+    client_id: '1046123456789-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com',
+    client_secret: 'GOCSPX-AbCdEfGhIjKlMnOpQrStUvWxYz12',
+    redirect_uri: 'https://directorioacacias.netlify.app/',
+    scopes: [
+        'https://www.googleapis.com/auth/business.manage',
+        'https://www.googleapis.com/auth/plus.business.manage'
+    ]
+};
 
-  async init() {
-    // Verificar si ya tenemos tokens válidos
-    if (this.accessToken) {
-      try {
-        await this.validateToken();
-      } catch (error) {
-        console.log('Token inválido, requiere nueva autenticación');
-        this.clearTokens();
-      }
+class GoogleMyBusinessIntegration {
+    constructor() {
+        this.accessToken = null;
+        this.refreshToken = null;
+        this.tokenExpiry = null;
+        this.isInitialized = false;
+        
+        // Cargar tokens guardados si existen
+        this.loadSavedTokens();
+        
+        // Detectar código de autorización en la URL
+        this.handleAuthCallback();
     }
 
-    // Manejar callback de OAuth2 si estamos en la página de callback
-    if (window.location.pathname.includes('/auth/google/callback')) {
-      await this.handleCallback();
-    }
-  }
-
-  // Iniciar proceso de autenticación
-  async startAuth() {
-    try {
-      const response = await fetch('/.netlify/functions/google-oauth/auth');
-      const data = await response.json();
-      
-      if (data.authUrl) {
-        // Redirigir a Google para autenticación
-        window.location.href = data.authUrl;
-      } else {
-        throw new Error('No se pudo obtener URL de autenticación');
-      }
-    } catch (error) {
-      console.error('Error iniciando autenticación:', error);
-      this.showError('Error al conectar con Google. Inténtalo de nuevo.');
-    }
-  }
-
-  // Manejar callback de Google
-  async handleCallback() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    const error = urlParams.get('error');
-
-    if (error) {
-      console.error('Error de autenticación:', error);
-      this.showError('Error en la autenticación con Google');
-      return;
+    // Cargar tokens guardados del localStorage
+    loadSavedTokens() {
+        try {
+            const savedTokens = localStorage.getItem('gmb_tokens');
+            if (savedTokens) {
+                const tokens = JSON.parse(savedTokens);
+                this.accessToken = tokens.access_token;
+                this.refreshToken = tokens.refresh_token;
+                this.tokenExpiry = new Date(tokens.expires_at);
+                
+                console.log('✅ Tokens de Google My Business cargados desde localStorage');
+                this.isInitialized = true;
+                
+                // Verificar si el token está expirado
+                if (this.isTokenExpired()) {
+                    console.log('⚠️ Token expirado, intentando renovar...');
+                    this.refreshAccessToken();
+                }
+            }
+        } catch (error) {
+            console.log('ℹ️ No hay tokens guardados, se requiere autorización inicial');
+        }
     }
 
-    if (code) {
-      try {
-        const response = await fetch(`/.netlify/functions/google-oauth/callback?code=${code}`);
-        const data = await response.json();
+    // Verificar si el token está expirado
+    isTokenExpired() {
+        if (!this.tokenExpiry) return true;
+        return new Date() >= this.tokenExpiry;
+    }
 
-        if (data.success && data.tokens) {
-          this.saveTokens(data.tokens);
-          this.isAuthenticated = true;
-          this.showSuccess('¡Autenticación exitosa! Ahora puedes obtener datos reales de Google My Business.');
-          
-          // Redirigir al admin o página principal
-          setTimeout(() => {
-            window.location.href = '/admin.html';
-          }, 2000);
+    // Detectar código de autorización en la URL
+    handleAuthCallback() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const authCode = urlParams.get('code');
+        const error = urlParams.get('error');
+
+        if (error) {
+            console.error('❌ Error en autorización OAuth2:', error);
+            this.showAuthModal('Error en la autorización: ' + error, true);
+            return;
+        }
+
+        if (authCode && !this.isInitialized) {
+            console.log('🔄 Código de autorización detectado, intercambiando por tokens...');
+            this.exchangeCodeForTokens(authCode);
+            
+            // Limpiar la URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }
+
+    // Intercambiar código de autorización por tokens
+    async exchangeCodeForTokens(authCode) {
+        try {
+            const response = await fetch('https://oauth2.googleapis.com/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    client_id: GOOGLE_CONFIG.client_id,
+                    client_secret: GOOGLE_CONFIG.client_secret,
+                    code: authCode,
+                    grant_type: 'authorization_code',
+                    redirect_uri: GOOGLE_CONFIG.redirect_uri
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+            }
+
+            const tokens = await response.json();
+            
+            // Guardar tokens
+            this.accessToken = tokens.access_token;
+            this.refreshToken = tokens.refresh_token;
+            this.tokenExpiry = new Date(Date.now() + (tokens.expires_in * 1000));
+            
+            // Guardar en localStorage
+            localStorage.setItem('gmb_tokens', JSON.stringify({
+                access_token: tokens.access_token,
+                refresh_token: tokens.refresh_token,
+                expires_at: this.tokenExpiry.toISOString()
+            }));
+            
+            console.log('✅ Tokens de Google My Business obtenidos y guardados exitosamente!');
+            this.isInitialized = true;
+            
+            this.showAuthModal('¡Autorización exitosa! Google My Business conectado correctamente.', false);
+            
+            // Iniciar obtención de imágenes reales
+            setTimeout(() => {
+                this.startImageIntegration();
+            }, 2000);
+            
+        } catch (error) {
+            console.error('❌ Error intercambiando código por tokens:', error);
+            this.showAuthModal('Error obteniendo tokens: ' + error.message, true);
+        }
+    }
+
+    // Renovar token de acceso usando refresh token
+    async refreshAccessToken() {
+        if (!this.refreshToken) {
+            console.log('⚠️ No hay refresh token, se requiere nueva autorización');
+            return false;
+        }
+
+        try {
+            const response = await fetch('https://oauth2.googleapis.com/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    client_id: GOOGLE_CONFIG.client_id,
+                    client_secret: GOOGLE_CONFIG.client_secret,
+                    refresh_token: this.refreshToken,
+                    grant_type: 'refresh_token'
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+            }
+
+            const tokens = await response.json();
+            
+            // Actualizar tokens
+            this.accessToken = tokens.access_token;
+            this.tokenExpiry = new Date(Date.now() + (tokens.expires_in * 1000));
+            
+            // Actualizar localStorage
+            const savedTokens = JSON.parse(localStorage.getItem('gmb_tokens') || '{}');
+            savedTokens.access_token = tokens.access_token;
+            savedTokens.expires_at = this.tokenExpiry.toISOString();
+            localStorage.setItem('gmb_tokens', JSON.stringify(savedTokens));
+            
+            console.log('✅ Token de acceso renovado exitosamente');
+            return true;
+            
+        } catch (error) {
+            console.error('❌ Error renovando token:', error);
+            return false;
+        }
+    }
+
+    // Iniciar autorización OAuth2
+    startAuthorization() {
+        const params = new URLSearchParams({
+            client_id: GOOGLE_CONFIG.client_id,
+            redirect_uri: GOOGLE_CONFIG.redirect_uri,
+            scope: GOOGLE_CONFIG.scopes.join(' '),
+            response_type: 'code',
+            access_type: 'offline',
+            prompt: 'consent'
+        });
+
+        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+        
+        console.log('🔐 Iniciando autorización OAuth2 para Google My Business...');
+        window.location.href = authUrl;
+    }
+
+    // Mostrar modal de estado de autorización
+    showAuthModal(message, isError = false) {
+        // Crear modal
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        `;
+
+        const modalContent = document.createElement('div');
+        modalContent.style.cssText = `
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        `;
+
+        modalContent.innerHTML = `
+            <div style="margin-bottom: 1rem;">
+                ${isError ? '❌' : '✅'} 
+            </div>
+            <h3 style="margin: 0 0 1rem 0; color: ${isError ? '#dc3545' : '#28a745'};">
+                ${isError ? 'Error de Autorización' : 'Autorización Exitosa'}
+            </h3>
+            <p style="margin: 0 0 1.5rem 0; color: #666; line-height: 1.5;">
+                ${message}
+            </p>
+            <button onclick="this.closest('.modal').remove()" style="
+                background: ${isError ? '#dc3545' : '#28a745'};
+                color: white;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 1rem;
+            ">
+                ${isError ? 'Cerrar' : 'Continuar'}
+            </button>
+        `;
+
+        modal.className = 'modal';
+        modal.appendChild(modalContent);
+        document.body.appendChild(modal);
+
+        // Auto-cerrar después de 5 segundos si no es error
+        if (!isError) {
+            setTimeout(() => {
+                if (modal.parentNode) {
+                    modal.remove();
+                }
+            }, 5000);
+        }
+    }
+
+    // Iniciar integración de imágenes reales
+    async startImageIntegration() {
+        if (!this.isInitialized || this.isTokenExpired()) {
+            console.log('⚠️ Token no válido para integración de imágenes');
+            return;
+        }
+
+        console.log('🖼️ Iniciando integración de imágenes reales de Google My Business...');
+        
+        try {
+            // Obtener cuentas de Google My Business
+            const accounts = await this.getBusinessAccounts();
+            
+            if (accounts && accounts.length > 0) {
+                console.log(`✅ ${accounts.length} cuenta(s) de Google My Business encontrada(s)`);
+                
+                // Obtener ubicaciones de la primera cuenta
+                const locations = await this.getBusinessLocations(accounts[0].name);
+                
+                if (locations && locations.length > 0) {
+                    console.log(`✅ ${locations.length} ubicación(es) encontrada(s)`);
+                    
+                    // Procesar imágenes de cada ubicación
+                    await this.processBusinessImages(locations);
+                }
+            }
+            
+        } catch (error) {
+            console.error('❌ Error en integración de imágenes:', error);
+        }
+    }
+
+    // Obtener cuentas de Google My Business
+    async getBusinessAccounts() {
+        try {
+            const response = await fetch('https://mybusinessaccountmanagement.googleapis.com/v1/accounts', {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                if (response.status === 401 && await this.refreshAccessToken()) {
+                    // Reintentar con token renovado
+                    return this.getBusinessAccounts();
+                }
+                throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+            }
+
+            const data = await response.json();
+            return data.accounts || [];
+            
+        } catch (error) {
+            console.error('❌ Error obteniendo cuentas:', error);
+            throw error;
+        }
+    }
+
+    // Obtener ubicaciones de una cuenta
+    async getBusinessLocations(accountName) {
+        try {
+            const response = await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${accountName}/locations`, {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                if (response.status === 401 && await this.refreshAccessToken()) {
+                    // Reintentar con token renovado
+                    return this.getBusinessLocations(accountName);
+                }
+                throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+            }
+
+            const data = await response.json();
+            return data.locations || [];
+            
+        } catch (error) {
+            console.error('❌ Error obteniendo ubicaciones:', error);
+            throw error;
+        }
+    }
+
+    // Procesar imágenes de negocios
+    async processBusinessImages(locations) {
+        console.log('🔄 Procesando imágenes de negocios...');
+        
+        for (const location of locations) {
+            try {
+                // Obtener fotos de la ubicación
+                const photos = await this.getLocationPhotos(location.name);
+                
+                if (photos && photos.length > 0) {
+                    console.log(`📸 ${photos.length} foto(s) encontrada(s) para ${location.title}`);
+                    
+                    // Aquí puedes procesar las fotos y actualizarlas en tu plataforma
+                    // Por ejemplo, actualizar las Netlify Functions con las URLs reales
+                    
+                } else {
+                    console.log(`ℹ️ No se encontraron fotos para ${location.title}`);
+                }
+                
+            } catch (error) {
+                console.error(`❌ Error procesando fotos para ${location.title}:`, error);
+            }
+        }
+    }
+
+    // Obtener fotos de una ubicación
+    async getLocationPhotos(locationName) {
+        try {
+            const response = await fetch(`https://mybusinessbusinessinformation.googleapis.com/v1/${locationName}/media`, {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                if (response.status === 401 && await this.refreshAccessToken()) {
+                    // Reintentar con token renovado
+                    return this.getLocationPhotos(locationName);
+                }
+                throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+            }
+
+            const data = await response.json();
+            return data.mediaItems || [];
+            
+        } catch (error) {
+            console.error('❌ Error obteniendo fotos:', error);
+            throw error;
+        }
+    }
+
+    // Verificar si está autorizado
+    isAuthorized() {
+        return this.isInitialized && !this.isTokenExpired();
+    }
+
+    // Método público para iniciar autorización
+    authorize() {
+        if (this.isAuthorized()) {
+            console.log('✅ Ya está autorizado con Google My Business');
+            this.startImageIntegration();
         } else {
-          throw new Error(data.error || 'Error en el intercambio de tokens');
+            console.log('🔐 Iniciando proceso de autorización...');
+            this.startAuthorization();
         }
-      } catch (error) {
-        console.error('Error en callback:', error);
-        this.showError('Error procesando la autenticación');
-      }
     }
-  }
+}
 
-  // Validar token actual
-  async validateToken() {
-    if (!this.accessToken) return false;
+// Inicializar integración automáticamente
+let gmbIntegration;
 
-    try {
-      const response = await fetch('/.netlify/functions/google-oauth/profile', {
-        headers: {
-          'Authorization': `Bearer ${this.accessToken}`
-        }
-      });
-
-      if (response.ok) {
-        this.isAuthenticated = true;
-        return true;
-      } else {
-        throw new Error('Token inválido');
-      }
-    } catch (error) {
-      this.isAuthenticated = false;
-      return false;
-    }
-  }
-
-  // Guardar tokens de forma segura
-  saveTokens(tokens) {
-    if (tokens.access_token) {
-      localStorage.setItem('google_access_token', tokens.access_token);
-      this.accessToken = tokens.access_token;
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Inicializando integración de Google My Business...');
+    gmbIntegration = new GoogleMyBusinessIntegration();
     
-    if (tokens.refresh_token) {
-      localStorage.setItem('google_refresh_token', tokens.refresh_token);
-      this.refreshToken = tokens.refresh_token;
+    // Exponer globalmente para uso manual si es necesario
+    window.gmbIntegration = gmbIntegration;
+    
+    // Si ya está autorizado, iniciar integración de imágenes
+    if (gmbIntegration.isAuthorized()) {
+        console.log('✅ Google My Business ya autorizado, iniciando integración...');
+        gmbIntegration.startImageIntegration();
+    } else {
+        console.log('ℹ️ Google My Business no autorizado. Usa gmbIntegration.authorize() para autorizar.');
     }
+});
 
-    // Guardar timestamp de expiración
-    if (tokens.expiry_date) {
-      localStorage.setItem('google_token_expiry', tokens.expiry_date.toString());
+// Función global para autorizar manualmente
+window.authorizeGoogleMyBusiness = () => {
+    if (gmbIntegration) {
+        gmbIntegration.authorize();
     }
-  }
-
-  // Limpiar tokens
-  clearTokens() {
-    localStorage.removeItem('google_access_token');
-    localStorage.removeItem('google_refresh_token');
-    localStorage.removeItem('google_token_expiry');
-    this.accessToken = null;
-    this.refreshToken = null;
-    this.isAuthenticated = false;
-  }
-
-  // Cerrar sesión
-  logout() {
-    this.clearTokens();
-    this.showSuccess('Sesión cerrada correctamente');
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
-  }
-
-  // Obtener datos reales de un negocio
-  async getBusinessSocialProfiles(businessName, address) {
-    if (!this.isAuthenticated) {
-      throw new Error('No autenticado con Google My Business');
-    }
-
-    try {
-      const response = await fetch(`/.netlify/functions/google-mybusiness/social-profiles?businessName=${encodeURIComponent(businessName)}&address=${encodeURIComponent(address || '')}`, {
-        headers: {
-          'Authorization': `Bearer ${this.accessToken}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.socialProfiles || {};
-      } else {
-        throw new Error('Error obteniendo perfiles sociales');
-      }
-    } catch (error) {
-      console.error('Error obteniendo datos de Google My Business:', error);
-      throw error;
-    }
-  }
-
-  // Buscar negocios en Google Places
-  async searchBusinesses(query, location) {
-    try {
-      const locationParam = location ? `&location=${location}` : '';
-      const response = await fetch(`/.netlify/functions/google-mybusiness/search-business?query=${encodeURIComponent(query)}${locationParam}`);
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.businesses || [];
-      } else {
-        throw new Error('Error buscando negocios');
-      }
-    } catch (error) {
-      console.error('Error buscando negocios:', error);
-      throw error;
-    }
-  }
-
-  // Mostrar mensajes de éxito
-  showSuccess(message) {
-    this.showMessage(message, 'success');
-  }
-
-  // Mostrar mensajes de error
-  showError(message) {
-    this.showMessage(message, 'error');
-  }
-
-  // Mostrar mensaje genérico
-  showMessage(message, type = 'info') {
-    // Crear elemento de notificación
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-      <div class="notification-content">
-        <span class="notification-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
-        <span class="notification-message">${message}</span>
-        <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
-      </div>
-    `;
-
-    // Agregar estilos si no existen
-    if (!document.getElementById('notification-styles')) {
-      const styles = document.createElement('style');
-      styles.id = 'notification-styles';
-      styles.textContent = `
-        .notification {
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          z-index: 10000;
-          max-width: 400px;
-          padding: 15px;
-          border-radius: 8px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-          animation: slideIn 0.3s ease-out;
-        }
-        .notification-success { background: #d4edda; border-left: 4px solid #28a745; color: #155724; }
-        .notification-error { background: #f8d7da; border-left: 4px solid #dc3545; color: #721c24; }
-        .notification-info { background: #d1ecf1; border-left: 4px solid #17a2b8; color: #0c5460; }
-        .notification-content { display: flex; align-items: center; gap: 10px; }
-        .notification-close { background: none; border: none; font-size: 18px; cursor: pointer; margin-left: auto; }
-        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
-      `;
-      document.head.appendChild(styles);
-    }
-
-    // Agregar al DOM
-    document.body.appendChild(notification);
-
-    // Auto-remover después de 5 segundos
-    setTimeout(() => {
-      if (notification.parentElement) {
-        notification.remove();
-      }
-    }, 5000);
-  }
-
-  // Obtener estado de autenticación
-  getAuthStatus() {
-    return {
-      isAuthenticated: this.isAuthenticated,
-      hasTokens: !!(this.accessToken && this.refreshToken)
-    };
-  }
-}
-
-// Instancia global
-window.googleAuth = new GoogleAuthManager();
-
-// Funciones de utilidad globales
-window.connectGoogleMyBusiness = () => {
-  window.googleAuth.startAuth();
 };
-
-window.disconnectGoogleMyBusiness = () => {
-  window.googleAuth.logout();
-};
-
-// Exportar para uso en módulos
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = GoogleAuthManager;
-}

@@ -312,7 +312,7 @@ class AdminPanel {
         try {
             this.showLoading(true);
             const token = localStorage.getItem('adminToken');
-            const response = await fetch('/api/admin/businesses', {
+            const response = await fetch('/.netlify/functions/admin-businesses', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -322,107 +322,221 @@ class AdminPanel {
                 const data = await response.json();
                 this.businesses = data.businesses || [];
                 this.renderBusinesses();
+                
+                // Update stats in overview
+                document.getElementById('totalBusinesses').textContent = data.total || 0;
+                document.getElementById('visibleBusinesses').textContent = data.visible || 0;
+            } else {
+                this.showNotification('Error al cargar negocios', 'error');
             }
         } catch (error) {
             console.error('Error loading businesses:', error);
+            this.showNotification('Error de conexión al cargar negocios', 'error');
         } finally {
             this.showLoading(false);
         }
     }
 
     renderBusinesses() {
-        const grid = document.getElementById('businessesGrid');
-        grid.innerHTML = '';
+        const container = document.getElementById('businessesGrid');
+        container.innerHTML = '';
 
         if (this.businesses.length === 0) {
-            grid.innerHTML = '<p style="color: #666; text-align: center; padding: 40px; grid-column: 1/-1;">No hay negocios registrados</p>';
+            container.innerHTML = '<p style="color: #666; text-align: center; padding: 40px;">No hay negocios registrados</p>';
             return;
         }
 
-        this.businesses.forEach(business => {
-            const card = this.createBusinessCard(business);
-            grid.appendChild(card);
-        });
-    }
-
-    createBusinessCard(business) {
-        const card = document.createElement('div');
-        card.className = 'business-card';
-        card.dataset.businessId = business.id;
-
-        card.innerHTML = `
-            <div class="business-header">
-                <div class="business-name">${business.nombre_negocio}</div>
-                <div class="business-category">${business.categoria_principal}</div>
-                <div class="business-address">
-                    <i class="fas fa-map-marker-alt"></i>
-                    ${business.direccion || 'Dirección no disponible'}
-                </div>
-            </div>
-            <div class="business-controls">
-                <div class="visibility-toggle">
-                    <span>Visible:</span>
-                    <div class="toggle-switch ${business.visible_en_directorio ? 'active' : ''}" 
-                         onclick="adminPanel.toggleBusinessVisibility('${business.id}')">
-                        <div class="toggle-slider"></div>
-                    </div>
-                </div>
-                <div class="business-actions">
-                    <button class="btn btn-secondary btn-sm" onclick="adminPanel.viewBusinessDetails('${business.id}')">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn btn-warning btn-sm" onclick="adminPanel.editBusiness('${business.id}')">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                </div>
-            </div>
+        // Create table structure
+        const table = document.createElement('div');
+        table.className = 'businesses-table';
+        table.style.cssText = `
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
         `;
 
-        return card;
+        // Table header
+        const header = document.createElement('div');
+        header.className = 'table-header';
+        header.style.cssText = `
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 1px solid #dee2e6;
+        `;
+        header.innerHTML = `
+            <div>Nombre del Negocio</div>
+            <div>Enlace</div>
+            <div style="text-align: center;">Estado</div>
+        `;
+        table.appendChild(header);
+
+        // Table rows
+        this.businesses.forEach((business, index) => {
+            const row = this.createBusinessRow(business, index);
+            table.appendChild(row);
+        });
+
+        container.appendChild(table);
     }
 
-    async toggleBusinessVisibility(businessId) {
+    createBusinessRow(business, index) {
+        const row = document.createElement('div');
+        row.className = 'business-row';
+        row.style.cssText = `
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            align-items: center;
+            transition: background-color 0.2s;
+        `;
+        
+        // Hover effect
+        row.addEventListener('mouseenter', () => {
+            row.style.backgroundColor = '#f8f9fa';
+        });
+        row.addEventListener('mouseleave', () => {
+            row.style.backgroundColor = 'transparent';
+        });
+
+        // Business name column
+        const nameColumn = document.createElement('div');
+        nameColumn.style.cssText = `
+            font-weight: 500;
+            color: #495057;
+            font-size: 14px;
+        `;
+        nameColumn.innerHTML = `
+            <div style="margin-bottom: 4px;">${business.nombre_negocio}</div>
+            <div style="font-size: 12px; color: #6c757d;">${business.categoria || 'Sin categoría'}</div>
+        `;
+
+        // Link column
+        const linkColumn = document.createElement('div');
+        linkColumn.innerHTML = `
+            <a href="${business.link}" target="_blank" 
+               style="color: #007bff; text-decoration: none; font-size: 13px; word-break: break-all;"
+               onmouseover="this.style.textDecoration='underline'"
+               onmouseout="this.style.textDecoration='none'">
+                ${business.link}
+            </a>
+        `;
+
+        // Status toggle column
+        const statusColumn = document.createElement('div');
+        statusColumn.style.cssText = `
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        `;
+        
+        const toggleButton = document.createElement('button');
+        toggleButton.className = 'toggle-button';
+        toggleButton.style.cssText = `
+            width: 60px;
+            height: 30px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            background: ${business.visible_en_directorio ? '#28a745' : '#dc3545'};
+            outline: none;
+        `;
+        
+        const toggleCircle = document.createElement('div');
+        toggleCircle.style.cssText = `
+            width: 26px;
+            height: 26px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: ${business.visible_en_directorio ? '32px' : '2px'};
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        `;
+        
+        toggleButton.appendChild(toggleCircle);
+        
+        // Add click handler for toggle
+        toggleButton.addEventListener('click', () => {
+            this.toggleBusinessVisibility(business.id, !business.visible_en_directorio, toggleButton, toggleCircle);
+        });
+        
+        // Add tooltip
+        toggleButton.title = business.visible_en_directorio ? 'Clic para ocultar' : 'Clic para mostrar';
+        
+        statusColumn.appendChild(toggleButton);
+
+        // Append columns to row
+        row.appendChild(nameColumn);
+        row.appendChild(linkColumn);
+        row.appendChild(statusColumn);
+
+        return row;
+    }
+
+    async toggleBusinessVisibility(businessId, newVisibility, toggleButton, toggleCircle) {
         try {
-            const token = localStorage.getItem('adminToken');
-            const business = this.businesses.find(b => b.id == businessId);
+            // Disable button during request
+            toggleButton.disabled = true;
+            toggleButton.style.opacity = '0.6';
             
-            if (!business) return;
-
-            const newVisibility = !business.visible_en_directorio;
-
-            const response = await fetch(`/api/admin/businesses/${businessId}/visibility`, {
+            const token = localStorage.getItem('adminToken');
+            const response = await fetch('/.netlify/functions/admin-businesses', {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ visible: newVisibility })
+                body: JSON.stringify({
+                    businessId: businessId,
+                    visible: newVisibility
+                })
             });
 
-            if (response.ok) {
-                business.visible_en_directorio = newVisibility;
-                
-                // Update toggle switch
-                const card = document.querySelector(`[data-business-id="${businessId}"]`);
-                const toggle = card.querySelector('.toggle-switch');
-                
-                if (newVisibility) {
-                    toggle.classList.add('active');
-                } else {
-                    toggle.classList.remove('active');
-                }
+            const data = await response.json();
 
-                // Show success message
-                this.showNotification('Visibilidad actualizada correctamente', 'success');
+            if (response.ok && data.success) {
+                // Update UI immediately
+                toggleButton.style.background = newVisibility ? '#28a745' : '#dc3545';
+                toggleCircle.style.left = newVisibility ? '32px' : '2px';
+                toggleButton.title = newVisibility ? 'Clic para ocultar' : 'Clic para mostrar';
                 
-                // Refresh overview stats
-                this.loadOverviewData();
+                // Update business data in memory
+                const business = this.businesses.find(b => b.id === businessId);
+                if (business) {
+                    business.visible_en_directorio = newVisibility;
+                }
+                
+                // Update stats
+                const visibleCount = this.businesses.filter(b => b.visible_en_directorio).length;
+                document.getElementById('visibleBusinesses').textContent = visibleCount;
+                
+                // Show success notification
+                this.showNotification(
+                    `Negocio ${newVisibility ? 'activado' : 'desactivado'} correctamente`, 
+                    'success'
+                );
             } else {
-                throw new Error('Error updating visibility');
+                this.showNotification(data.error || 'Error al actualizar negocio', 'error');
             }
         } catch (error) {
-            console.error('Error toggling visibility:', error);
-            this.showNotification('Error al actualizar visibilidad', 'error');
+            console.error('Error toggling business visibility:', error);
+            this.showNotification('Error de conexión al actualizar negocio', 'error');
+        } finally {
+            // Re-enable button
+            toggleButton.disabled = false;
+            toggleButton.style.opacity = '1';
         }
     }
 

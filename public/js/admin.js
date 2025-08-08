@@ -136,27 +136,36 @@ class AdminPanel {
         try {
             this.showLoading(true);
             
-            const response = await fetch('/.netlify/functions/admin-login', {
+            console.log('🔐 Intentando login admin...');
+            
+            // USAR NUEVA FUNCIÓN SIMPLE DE LOGIN
+            const response = await fetch('/.netlify/functions/admin-login-simple', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ password })
+                body: JSON.stringify({ 
+                    username: 'admin',
+                    password: password 
+                })
             });
 
             const data = await response.json();
+            console.log('✅ Respuesta de login:', data);
 
             if (response.ok && data.success) {
                 localStorage.setItem('adminToken', data.token);
                 this.isAuthenticated = true;
+                console.log('✅ Login exitoso, mostrando dashboard...');
                 this.showDashboard();
                 this.loadDashboardData();
             } else {
-                errorDiv.textContent = data.error || 'Contraseña incorrecta';
+                console.log('❌ Login fallido:', data.error);
+                errorDiv.textContent = data.error || 'Credenciales incorrectas';
                 errorDiv.style.display = 'block';
             }
         } catch (error) {
-            console.error('Login error:', error);
+            console.error('❌ Error de login:', error);
             errorDiv.textContent = 'Error de conexión. Intenta nuevamente.';
             errorDiv.style.display = 'block';
         } finally {

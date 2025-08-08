@@ -499,14 +499,14 @@
 
             showLogin() {
                 console.log('📋 Mostrando pantalla de login...');
-                document.getElementById('loginSection').style.display = 'block';
-                document.getElementById('dashboardSection').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'block';
+                document.getElementById('adminDashboard').style.display = 'none';
             }
 
             showDashboard() {
                 console.log('📊 Mostrando dashboard...');
-                document.getElementById('loginSection').style.display = 'none';
-                document.getElementById('dashboardSection').style.display = 'block';
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
             }
 
             bindEvents() {
@@ -541,11 +541,10 @@
 
             handleLogin() {
                 console.log('🔑 Procesando login...');
-                const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
                 
                 // Simple authentication
-                if (username === 'admin' && password === 'admin123') {
+                if (password === 'admin123') {
                     console.log('✅ Credenciales correctas!');
                     const token = 'valid-' + Date.now();
                     localStorage.setItem('adminToken', token);

@@ -454,8 +454,20 @@
     <script src="js/google-auth.js"></script>
     <!-- Admin Panel Completo Embebido Directamente -->
     <script>
+        // DEBUGGING INMEDIATO - FORZAR LOGS VISIBLES
+        console.log('='.repeat(50));
         console.log('🚀 ADMIN PANEL COMPLETO - INICIO DE EJECUCIÓN EMBEBIDA!');
         console.log('🔧 JavaScript embebido directamente en HTML para evitar problemas de carga...');
+        console.log('Timestamp:', new Date().toISOString());
+        console.log('Location:', window.location.href);
+        console.log('Document ready state:', document.readyState);
+        console.log('='.repeat(50));
+        
+        // Forzar alerta visible para confirmar ejecución
+        if (window.location.href.includes('admin')) {
+            console.log('🚨 ADMIN PAGE DETECTED - FORCING EXECUTION!');
+            // alert('DEBUG: JavaScript se está ejecutando en admin!');
+        }
         
         class AdminPanel {
             constructor() {

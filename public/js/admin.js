@@ -1,5 +1,7 @@
 class AdminPanel {
     constructor() {
+        console.log('🔧 Inicializando AdminPanel completo con todas las funcionalidades...');
+        
         this.isAuthenticated = false;
         this.currentTab = 'overview';
         this.businesses = [];
@@ -10,7 +12,9 @@ class AdminPanel {
         this.itemsPerPage = 15;
         this.totalPages = 1;
         
+        console.log('⚙️ Propiedades inicializadas, llamando init()...');
         this.init();
+        console.log('✅ Constructor AdminPanel completado exitosamente!');
     }
 
     init() {
@@ -1169,7 +1173,21 @@ class AdminPanel {
 
 // Initialize admin panel when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.adminPanel = new AdminPanel();
+    console.log('🎯 DOM cargado, inicializando AdminPanel completo...');
+    
+    // Clear any invalid tokens on page load for debugging
+    const existingToken = localStorage.getItem('adminToken');
+    if (existingToken && !existingToken.startsWith('valid-')) {
+        console.log('🧹 Limpiando token inválido al cargar página...');
+        localStorage.removeItem('adminToken');
+    }
+    
+    try {
+        window.adminPanel = new AdminPanel();
+        console.log('✅ AdminPanel completo inicializado correctamente!');
+    } catch (error) {
+        console.error('💥 Error inicializando AdminPanel:', error);
+    }
 });
 
 // Add notification styles

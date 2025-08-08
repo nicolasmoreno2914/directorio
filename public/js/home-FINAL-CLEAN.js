@@ -50,18 +50,46 @@ async function loadBusinesses() {
         container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666; font-size: 1.2rem;">🔄 Cargando negocios...</div>';
         
         console.log('📞 Llamando a /api/businesses...');
-        const response = await fetch('/api/businesses');
+        const businessesResponse = await fetch('/.netlify/functions/businesses');
         
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        if (!businessesResponse.ok) {
+            throw new Error(`HTTP ${businessesResponse.status}: ${businessesResponse.statusText}`);
         }
         
-        const data = await response.json();
-        console.log('✅ Datos recibidos:', data);
+        const businessesData = await businessesResponse.json();
+        console.log('✅ Datos de negocios recibidos:', businessesData);
         
-        if (data.success && data.businesses && Array.isArray(data.businesses)) {
-            allBusinesses = data.businesses.filter(business => business.visible_en_directorio);
-            console.log(`✅ ${allBusinesses.length} negocios cargados`);
+        // OBTENER ESTADO DE VISIBILIDAD DEL ADMIN
+        let hiddenBusinesses = [];
+        try {
+            console.log('🔍 Consultando estado de visibilidad admin...');
+            const visibilityResponse = await fetch('/.netlify/functions/admin-visibility');
+            if (visibilityResponse.ok) {
+                const visibilityData = await visibilityResponse.json();
+                hiddenBusinesses = visibilityData.hiddenBusinesses || [];
+                console.log('👁️ Negocios ocultos por admin:', hiddenBusinesses);
+            }
+        } catch (visError) {
+            console.warn('⚠️ No se pudo obtener estado de visibilidad, mostrando todos:', visError);
+        }
+        
+        if (businessesData.success && businessesData.businesses && Array.isArray(businessesData.businesses)) {
+            // FILTRAR NEGOCIOS BASÁNDOSE EN ESTADO DE VISIBILIDAD ADMIN
+            const allBusinessesData = businessesData.businesses;
+            allBusinesses = allBusinessesData.filter(business => {
+                const isHidden = hiddenBusinesses.includes(business.id);
+                return !isHidden; // Solo mostrar los que NO están ocultos
+            });
+            
+            console.log(`🎯 FILTRADO APLICADO:`);
+            console.log(`   📊 Total negocios: ${allBusinessesData.length}`);
+            console.log(`   👁️ Negocios ocultos: ${hiddenBusinesses.length} [${hiddenBusinesses.join(', ')}]`);
+            console.log(`   ✅ Negocios visibles: ${allBusinesses.length}`);
+            console.log(`   🔄 Última actualización admin: ${visibilityData?.lastUpdated || 'N/A'}`);
+            
+            if (allBusinesses.length === 0) {
+                console.warn('⚠️ No hay negocios visibles para mostrar');
+            }
             
             // Renderizar primera página
             renderPage(1);

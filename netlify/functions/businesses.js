@@ -278,32 +278,24 @@ exports.handler = async (event, context) => {
   try {
     console.log('🏪 Sirviendo negocios reales de Acacías...');
     
-    // USAR ESTADO COMPARTIDO PARA SINCRONIZACIÓN ADMIN-FRONTEND
-    const businessState = require('./shared-business-state');
+    // USAR DATOS REALES HARDCODEADOS (TEMPORALMENTE SIN FILTRO)
+    const businesses = getRealBusinessesData();
     
-    const allBusinesses = businessState.getAllBusinesses();
-    const visibleBusinesses = businessState.getVisibleBusinesses();
-    const stats = businessState.getBusinessStats();
-    
-    console.log(`✅ Total negocios: ${stats.total}, Visibles: ${stats.visible}, Ocultos: ${stats.hidden}`);
-    console.log(`🔍 Retornando solo negocios visibles desde panel admin`);
+    console.log(`✅ Retornando ${businesses.length} negocios reales con imágenes de Google My Business`);
     
     return {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=30' // Cache corto para reflejar cambios admin rápidamente
+        'Cache-Control': 'public, max-age=300'
       },
       body: JSON.stringify({
         success: true,
-        businesses: visibleBusinesses,
-        data: visibleBusinesses,
-        count: stats.visible,
-        total: stats.total,
-        hidden: stats.hidden,
-        source: 'shared_business_state_filtered_by_admin',
-        timestamp: new Date().toISOString()
+        businesses: businesses,
+        data: businesses,
+        count: businesses.length,
+        source: 'real_businesses_google_my_business'
       })
     };
     

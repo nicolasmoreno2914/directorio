@@ -648,26 +648,32 @@ class AdminPanel {
 
     async toggleBusinessVisibility(businessId, newVisibility, toggleButton, toggleCircle) {
         try {
+            console.log(`⚙️ Cambiando visibilidad: Negocio ${businessId} -> ${newVisibility ? 'VISIBLE' : 'OCULTO'}`);
+            
             // Disable button during request
             toggleButton.disabled = true;
             toggleButton.style.opacity = '0.6';
             
-            const token = localStorage.getItem('adminToken');
-            const response = await fetch('/.netlify/functions/admin-businesses', {
-                method: 'PUT',
+            // USAR NUEVO ENDPOINT DE VISIBILIDAD
+            const response = await fetch('/.netlify/functions/admin-visibility', {
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     businessId: businessId,
                     visible: newVisibility
                 })
             });
-
-            const data = await response.json();
-
-            if (response.ok && data.success) {
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log('✅ Respuesta del servidor:', result);
+            
+            if (result.success) {
                 // Update UI immediately
                 toggleButton.style.background = newVisibility ? '#28a745' : '#dc3545';
                 toggleCircle.style.left = newVisibility ? '32px' : '2px';
@@ -679,20 +685,28 @@ class AdminPanel {
                     business.visible_en_directorio = newVisibility;
                 }
                 
+                console.log(`📊 Estado actualizado. Negocios ocultos: [${result.hiddenBusinesses.join(', ')}]`);
+                
                 // Update stats
                 const visibleCount = this.businesses.filter(b => b.visible_en_directorio).length;
                 document.getElementById('visibleBusinesses').textContent = visibleCount;
                 
                 // Show success notification
-                this.showNotification(
-                    `Negocio ${newVisibility ? 'activado' : 'desactivado'} correctamente`, 
-                    'success'
-                );
+                this.showNotification(`Negocio ${newVisibility ? 'activado' : 'desactivado'} correctamente`, 'success');
+                
             } else {
-                this.showNotification(data.error || 'Error al actualizar negocio', 'error');
+                throw new Error(result.message || 'Error al actualizar visibilidad');
             }
+            
         } catch (error) {
-            console.error('Error toggling business visibility:', error);
+            console.error('❌ Error toggling business visibility:', error);
+            this.showNotification('Error al actualizar la visibilidad del negocio', 'error');
+        } finally {
+            // Re-enable button
+            toggleButton.disabled = false;
+            toggleButton.style.opacity = '1';
+        }
+    }
             this.showNotification('Error de conexión al actualizar negocio', 'error');
         } finally {
             // Re-enable button

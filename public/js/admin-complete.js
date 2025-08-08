@@ -1236,3 +1236,6 @@ const notificationStyles = `
 const styleSheet = document.createElement('style');
 styleSheet.textContent = notificationStyles;
 document.head.appendChild(styleSheet);
+
+// Export for global access
+window.AdminPanel = AdminPanel;

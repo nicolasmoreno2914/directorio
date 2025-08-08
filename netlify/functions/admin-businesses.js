@@ -561,8 +561,8 @@ function getRealBusinessesData() {
   ];
 }
 
-// Get businesses data
-let businessesData = getRealBusinessesData();
+// USAR ESTADO COMPARTIDO PARA SINCRONIZACIÓN
+const businessState = require('./shared-business-state');
 
 exports.handler = async (event, context) => {
     // Handle CORS
@@ -597,8 +597,11 @@ exports.handler = async (event, context) => {
 
         switch (method) {
             case 'GET':
-                // Get all businesses for admin management
-                const businessesList = businessesData.map(business => ({
+                // Get all businesses for admin management using shared state
+                const allBusinesses = businessState.getAllBusinesses();
+                const stats = businessState.getBusinessStats();
+                
+                const businessesList = allBusinesses.map(business => ({
                     id: business.id,
                     nombre_negocio: business.nombre_negocio,
                     categoria: business.categoria,
@@ -609,24 +612,29 @@ exports.handler = async (event, context) => {
                     link: `https://directorioacacias.netlify.app/business.html?id=${business.id}`
                 }));
 
+                console.log(`📋 Admin: Retornando ${stats.total} negocios (${stats.visible} visibles, ${stats.hidden} ocultos)`);
+
                 return {
                     statusCode: 200,
                     headers,
                     body: JSON.stringify({
                         success: true,
                         businesses: businessesList,
-                        total: businessesList.length,
-                        visible: businessesList.filter(b => b.visible_en_directorio).length,
-                        hidden: businessesList.filter(b => !b.visible_en_directorio).length
+                        total: stats.total,
+                        visible: stats.visible,
+                        hidden: stats.hidden,
+                        source: 'admin_shared_state'
                     })
                 };
 
             case 'PUT':
-                // Toggle business visibility
+                // Toggle business visibility using shared state
                 const { businessId, visible } = JSON.parse(event.body);
                 
-                const businessIndex = businessesData.findIndex(b => b.id === parseInt(businessId));
-                if (businessIndex === -1) {
+                // Usar estado compartido para actualizar visibilidad
+                const success = businessState.updateBusinessVisibility(businessId, visible);
+                
+                if (!success) {
                     return {
                         statusCode: 404,
                         headers,
@@ -634,7 +642,12 @@ exports.handler = async (event, context) => {
                     };
                 }
 
-                businessesData[businessIndex].visible_en_directorio = visible;
+                // Obtener el negocio actualizado
+                const updatedBusiness = businessState.getAllBusinesses().find(b => b.id === parseInt(businessId));
+                const newStats = businessState.getBusinessStats();
+
+                console.log(`⚙️ Admin: Negocio ${businessId} (${updatedBusiness.nombre_negocio}) ${visible ? 'ACTIVADO' : 'DESACTIVADO'}`);
+                console.log(`📊 Nuevas estadísticas: ${newStats.visible} visibles, ${newStats.hidden} ocultos`);
 
                 return {
                     statusCode: 200,
@@ -643,10 +656,11 @@ exports.handler = async (event, context) => {
                         success: true,
                         message: `Negocio ${visible ? 'activado' : 'desactivado'} correctamente`,
                         business: {
-                            id: businessesData[businessIndex].id,
-                            nombre_negocio: businessesData[businessIndex].nombre_negocio,
-                            visible_en_directorio: businessesData[businessIndex].visible_en_directorio
-                        }
+                            id: updatedBusiness.id,
+                            nombre_negocio: updatedBusiness.nombre_negocio,
+                            visible_en_directorio: updatedBusiness.visible_en_directorio
+                        },
+                        stats: newStats
                     })
                 };
 

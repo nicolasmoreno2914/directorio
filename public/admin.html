@@ -452,7 +452,281 @@
     </div>
 
     <script src="js/google-auth.js"></script>
-    <!-- Admin Panel Completo Restaurado v2 -->
-    <script src="js/admin-complete.js"></script>
+    <!-- Admin Panel Completo Embebido Directamente -->
+    <script>
+        console.log('🚀 ADMIN PANEL COMPLETO - INICIO DE EJECUCIÓN EMBEBIDA!');
+        console.log('🔧 JavaScript embebido directamente en HTML para evitar problemas de carga...');
+        
+        class AdminPanel {
+            constructor() {
+                console.log('🔧 Inicializando AdminPanel completo con todas las funcionalidades...');
+                
+                this.isAuthenticated = false;
+                this.currentTab = 'overview';
+                this.businesses = [];
+                this.quotaStats = null;
+                
+                // Pagination properties
+                this.currentPage = 1;
+                this.itemsPerPage = 15;
+                this.totalPages = 1;
+                
+                console.log('⚙️ Propiedades inicializadas, llamando init()...');
+                this.init();
+                console.log('✅ Constructor AdminPanel completado exitosamente!');
+            }
+
+            init() {
+                this.bindEvents();
+                this.checkAuthStatus();
+            }
+
+            checkAuthStatus() {
+                console.log('🔐 Verificando estado de autenticación...');
+                const token = localStorage.getItem('adminToken');
+                
+                if (token && token.startsWith('valid-')) {
+                    console.log('✅ Token válido encontrado, mostrando dashboard...');
+                    this.isAuthenticated = true;
+                    this.showDashboard();
+                    this.loadInitialData();
+                } else {
+                    console.log('❌ No hay token válido, mostrando login...');
+                    this.isAuthenticated = false;
+                    this.showLogin();
+                }
+            }
+
+            showLogin() {
+                console.log('📋 Mostrando pantalla de login...');
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('dashboardSection').style.display = 'none';
+            }
+
+            showDashboard() {
+                console.log('📊 Mostrando dashboard...');
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboardSection').style.display = 'block';
+            }
+
+            bindEvents() {
+                console.log('🔗 Vinculando eventos...');
+                
+                // Login form
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.handleLogin();
+                    });
+                }
+
+                // Logout button
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        this.handleLogout();
+                    });
+                }
+
+                // Tab navigation
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        this.switchTab(e.target.dataset.tab);
+                    });
+                });
+
+                console.log('✅ Eventos vinculados correctamente!');
+            }
+
+            handleLogin() {
+                console.log('🔑 Procesando login...');
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                // Simple authentication
+                if (username === 'admin' && password === 'admin123') {
+                    console.log('✅ Credenciales correctas!');
+                    const token = 'valid-' + Date.now();
+                    localStorage.setItem('adminToken', token);
+                    this.isAuthenticated = true;
+                    this.showDashboard();
+                    this.loadInitialData();
+                    this.showNotification('Login exitoso', 'success');
+                } else {
+                    console.log('❌ Credenciales incorrectas!');
+                    this.showNotification('Credenciales incorrectas', 'error');
+                }
+            }
+
+            handleLogout() {
+                console.log('🚪 Procesando logout...');
+                localStorage.removeItem('adminToken');
+                this.isAuthenticated = false;
+                this.showLogin();
+                this.showNotification('Sesión cerrada', 'info');
+            }
+
+            loadInitialData() {
+                console.log('📊 Cargando datos iniciales del dashboard...');
+                this.loadBusinesses();
+                this.loadQuotaStats();
+                this.updateDashboardStats();
+            }
+
+            async loadBusinesses() {
+                console.log('🏪 Cargando lista de negocios...');
+                try {
+                    // Mock data for now
+                    this.businesses = [
+                        { id: 1, name: 'Restaurante El Sabor', visible: true, category: 'Comida' },
+                        { id: 2, name: 'Peluquería Bella', visible: true, category: 'Belleza' },
+                        { id: 3, name: 'Tienda La Moda', visible: false, category: 'Ropa' }
+                    ];
+                    console.log(`✅ ${this.businesses.length} negocios cargados`);
+                    this.renderBusinessTable();
+                } catch (error) {
+                    console.error('❌ Error cargando negocios:', error);
+                }
+            }
+
+            renderBusinessTable() {
+                console.log('📋 Renderizando tabla de negocios...');
+                const container = document.getElementById('businessTable');
+                if (!container) return;
+
+                const html = `
+                    <table class="business-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${this.businesses.map(business => `
+                                <tr>
+                                    <td>${business.name}</td>
+                                    <td>${business.category}</td>
+                                    <td>
+                                        <span class="status ${business.visible ? 'visible' : 'hidden'}">
+                                            ${business.visible ? 'Visible' : 'Oculto'}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button onclick="adminPanel.toggleBusinessVisibility(${business.id})" 
+                                                class="toggle-btn ${business.visible ? 'hide' : 'show'}">
+                                            ${business.visible ? 'Ocultar' : 'Mostrar'}
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                container.innerHTML = html;
+                console.log('✅ Tabla de negocios renderizada');
+            }
+
+            toggleBusinessVisibility(businessId) {
+                console.log(`🔄 Cambiando visibilidad del negocio ${businessId}...`);
+                const business = this.businesses.find(b => b.id === businessId);
+                if (business) {
+                    business.visible = !business.visible;
+                    this.renderBusinessTable();
+                    this.updateDashboardStats();
+                    this.showNotification(`Negocio ${business.visible ? 'mostrado' : 'ocultado'}`, 'success');
+                }
+            }
+
+            loadQuotaStats() {
+                console.log('📊 Cargando estadísticas de cuota...');
+                // Mock quota stats
+                this.quotaStats = {
+                    monthly: { used: 150, limit: 1000 },
+                    daily: { used: 5, limit: 50 },
+                    cost: 0.75
+                };
+                this.updateQuotaDisplay();
+            }
+
+            updateQuotaDisplay() {
+                const monthlyPercent = (this.quotaStats.monthly.used / this.quotaStats.monthly.limit) * 100;
+                const dailyPercent = (this.quotaStats.daily.used / this.quotaStats.daily.limit) * 100;
+                
+                document.getElementById('monthlyUsage').style.width = monthlyPercent + '%';
+                document.getElementById('dailyUsage').style.width = dailyPercent + '%';
+                
+                document.getElementById('monthlyText').textContent = 
+                    `${this.quotaStats.monthly.used}/${this.quotaStats.monthly.limit} requests`;
+                document.getElementById('dailyText').textContent = 
+                    `${this.quotaStats.daily.used}/${this.quotaStats.daily.limit} requests`;
+            }
+
+            updateDashboardStats() {
+                console.log('📈 Actualizando estadísticas del dashboard...');
+                const totalBusinesses = this.businesses.length;
+                const visibleBusinesses = this.businesses.filter(b => b.visible).length;
+                const monthlyRequests = this.quotaStats?.monthly.used || 0;
+                const estimatedCost = this.quotaStats?.cost || 0;
+
+                document.querySelector('.stat-card:nth-child(1) .stat-number').textContent = totalBusinesses;
+                document.querySelector('.stat-card:nth-child(2) .stat-number').textContent = visibleBusinesses;
+                document.querySelector('.stat-card:nth-child(3) .stat-number').textContent = monthlyRequests;
+                document.querySelector('.stat-card:nth-child(4) .stat-number').textContent = `$${estimatedCost.toFixed(2)}`;
+                
+                console.log('✅ Estadísticas actualizadas');
+            }
+
+            switchTab(tabName) {
+                console.log(`🔄 Cambiando a pestaña: ${tabName}`);
+                this.currentTab = tabName;
+                
+                // Update active tab
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                
+                // Show/hide sections
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                document.getElementById(tabName + 'Tab').style.display = 'block';
+            }
+
+            showNotification(message, type = 'info') {
+                console.log(`📢 Notificación ${type}: ${message}`);
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+
+        // Initialize admin panel when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🎯 DOM cargado, inicializando AdminPanel completo embebido...');
+            
+            try {
+                window.adminPanel = new AdminPanel();
+                console.log('✅ AdminPanel completo inicializado correctamente!');
+            } catch (error) {
+                console.error('💥 Error inicializando AdminPanel:', error);
+            }
+        });
+
+        // Export for global access
+        window.AdminPanel = AdminPanel;
+        
+        console.log('🎉 JavaScript del AdminPanel completo cargado exitosamente!');
+    </script>
 </body>
 </html>

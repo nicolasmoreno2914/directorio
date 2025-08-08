@@ -61,11 +61,12 @@ async function loadBusinesses() {
         
         // OBTENER ESTADO DE VISIBILIDAD DEL ADMIN
         let hiddenBusinesses = [];
+        let visibilityData = null;
         try {
             console.log('🔍 Consultando estado de visibilidad admin...');
             const visibilityResponse = await fetch('/.netlify/functions/admin-visibility');
             if (visibilityResponse.ok) {
-                const visibilityData = await visibilityResponse.json();
+                visibilityData = await visibilityResponse.json();
                 hiddenBusinesses = visibilityData.hiddenBusinesses || [];
                 console.log('👁️ Negocios ocultos por admin:', hiddenBusinesses);
             }

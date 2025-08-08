@@ -5,6 +5,11 @@ class AdminPanel {
         this.businesses = [];
         this.quotaStats = null;
         
+        // Pagination properties
+        this.currentPage = 1;
+        this.itemsPerPage = 15;
+        this.totalPages = 1;
+        
         this.init();
     }
 
@@ -346,7 +351,44 @@ class AdminPanel {
             return;
         }
 
-        // Create table structure
+        // Calculate pagination
+        this.totalPages = Math.ceil(this.businesses.length / this.itemsPerPage);
+        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+        const endIndex = startIndex + this.itemsPerPage;
+        const currentBusinesses = this.businesses.slice(startIndex, endIndex);
+
+        // Create main wrapper with full width
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = `
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+        `;
+
+        // Create pagination info header
+        const paginationInfo = document.createElement('div');
+        paginationInfo.style.cssText = `
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        `;
+        paginationInfo.innerHTML = `
+            <div style="font-weight: 600; color: #495057;">
+                Mostrando ${startIndex + 1}-${Math.min(endIndex, this.businesses.length)} de ${this.businesses.length} negocios
+            </div>
+            <div style="font-size: 14px; color: #6c757d;">
+                Página ${this.currentPage} de ${this.totalPages}
+            </div>
+        `;
+        wrapper.appendChild(paginationInfo);
+
+        // Create table structure with full width
         const table = document.createElement('div');
         table.className = 'businesses-table';
         table.style.cssText = `
@@ -355,14 +397,15 @@ class AdminPanel {
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             overflow: hidden;
+            margin-bottom: 20px;
         `;
 
-        // Table header
+        // Table header with improved layout
         const header = document.createElement('div');
         header.className = 'table-header';
         header.style.cssText = `
             display: grid;
-            grid-template-columns: 2fr 2fr 1fr;
+            grid-template-columns: 3fr 3fr 1.5fr;
             gap: 20px;
             padding: 20px;
             background: #f8f9fa;
@@ -377,13 +420,19 @@ class AdminPanel {
         `;
         table.appendChild(header);
 
-        // Table rows
-        this.businesses.forEach((business, index) => {
-            const row = this.createBusinessRow(business, index);
+        // Table rows for current page
+        currentBusinesses.forEach((business, index) => {
+            const row = this.createBusinessRow(business, startIndex + index);
             table.appendChild(row);
         });
 
-        container.appendChild(table);
+        wrapper.appendChild(table);
+
+        // Create pagination controls
+        const paginationControls = this.createPaginationControls();
+        wrapper.appendChild(paginationControls);
+
+        container.appendChild(wrapper);
     }
 
     createBusinessRow(business, index) {
@@ -391,7 +440,7 @@ class AdminPanel {
         row.className = 'business-row';
         row.style.cssText = `
             display: grid;
-            grid-template-columns: 2fr 2fr 1fr;
+            grid-template-columns: 3fr 3fr 1.5fr;
             gap: 20px;
             padding: 20px;
             border-bottom: 1px solid #dee2e6;
@@ -483,6 +532,118 @@ class AdminPanel {
         row.appendChild(statusColumn);
 
         return row;
+    }
+
+    createPaginationControls() {
+        const paginationContainer = document.createElement('div');
+        paginationContainer.style.cssText = `
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        `;
+
+        // Previous button
+        const prevButton = document.createElement('button');
+        prevButton.innerHTML = '← Anterior';
+        prevButton.disabled = this.currentPage === 1;
+        prevButton.style.cssText = `
+            padding: 10px 16px;
+            border: 1px solid #dee2e6;
+            background: ${this.currentPage === 1 ? '#f8f9fa' : 'white'};
+            color: ${this.currentPage === 1 ? '#6c757d' : '#495057'};
+            border-radius: 6px;
+            cursor: ${this.currentPage === 1 ? 'not-allowed' : 'pointer'};
+            font-size: 14px;
+            transition: all 0.2s;
+        `;
+        
+        if (this.currentPage > 1) {
+            prevButton.addEventListener('click', () => {
+                this.currentPage--;
+                this.renderBusinesses();
+            });
+            prevButton.addEventListener('mouseenter', () => {
+                prevButton.style.background = '#e9ecef';
+            });
+            prevButton.addEventListener('mouseleave', () => {
+                prevButton.style.background = 'white';
+            });
+        }
+        
+        paginationContainer.appendChild(prevButton);
+
+        // Page numbers
+        const startPage = Math.max(1, this.currentPage - 2);
+        const endPage = Math.min(this.totalPages, this.currentPage + 2);
+        
+        for (let i = startPage; i <= endPage; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.style.cssText = `
+                padding: 10px 14px;
+                border: 1px solid #dee2e6;
+                background: ${i === this.currentPage ? '#007bff' : 'white'};
+                color: ${i === this.currentPage ? 'white' : '#495057'};
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: ${i === this.currentPage ? '600' : '400'};
+                min-width: 40px;
+                transition: all 0.2s;
+            `;
+            
+            if (i !== this.currentPage) {
+                pageButton.addEventListener('click', () => {
+                    this.currentPage = i;
+                    this.renderBusinesses();
+                });
+                pageButton.addEventListener('mouseenter', () => {
+                    pageButton.style.background = '#e9ecef';
+                });
+                pageButton.addEventListener('mouseleave', () => {
+                    pageButton.style.background = 'white';
+                });
+            }
+            
+            paginationContainer.appendChild(pageButton);
+        }
+
+        // Next button
+        const nextButton = document.createElement('button');
+        nextButton.innerHTML = 'Siguiente →';
+        nextButton.disabled = this.currentPage === this.totalPages;
+        nextButton.style.cssText = `
+            padding: 10px 16px;
+            border: 1px solid #dee2e6;
+            background: ${this.currentPage === this.totalPages ? '#f8f9fa' : 'white'};
+            color: ${this.currentPage === this.totalPages ? '#6c757d' : '#495057'};
+            border-radius: 6px;
+            cursor: ${this.currentPage === this.totalPages ? 'not-allowed' : 'pointer'};
+            font-size: 14px;
+            transition: all 0.2s;
+        `;
+        
+        if (this.currentPage < this.totalPages) {
+            nextButton.addEventListener('click', () => {
+                this.currentPage++;
+                this.renderBusinesses();
+            });
+            nextButton.addEventListener('mouseenter', () => {
+                nextButton.style.background = '#e9ecef';
+            });
+            nextButton.addEventListener('mouseleave', () => {
+                nextButton.style.background = 'white';
+            });
+        }
+        
+        paginationContainer.appendChild(nextButton);
+
+        return paginationContainer;
     }
 
     async toggleBusinessVisibility(businessId, newVisibility, toggleButton, toggleCircle) {

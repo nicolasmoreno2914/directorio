@@ -1,3 +1,6 @@
+console.log('🚀 ADMIN-COMPLETE.JS CARGANDO - INICIO DE EJECUCIÓN!');
+console.log('🔧 Verificando que el JavaScript se ejecute correctamente...');
+
 class AdminPanel {
     constructor() {
         console.log('🔧 Inicializando AdminPanel completo con todas las funcionalidades...');

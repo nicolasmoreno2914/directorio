@@ -51,13 +51,20 @@ class AdminPanelSimple {
         console.log('🔐 Verificando estado de autenticación...');
         const token = localStorage.getItem('adminToken');
         
-        if (token) {
-            console.log('✅ Token encontrado, mostrando dashboard...');
+        // For debugging: clear any invalid tokens
+        if (token && token === 'invalid-test-token') {
+            console.log('🧹 Limpiando token inválido de pruebas...');
+            localStorage.removeItem('adminToken');
+        }
+        
+        const validToken = localStorage.getItem('adminToken');
+        if (validToken && validToken !== 'invalid-test-token') {
+            console.log('✅ Token válido encontrado, mostrando dashboard...');
             this.isAuthenticated = true;
             this.showDashboard();
             this.loadDashboardData();
         } else {
-            console.log('❌ Sin token, mostrando login...');
+            console.log('❌ Sin token válido, mostrando login...');
             this.showLogin();
         }
     }
@@ -185,12 +192,26 @@ class AdminPanelSimple {
             const businessesResponse = await fetch('/.netlify/functions/businesses');
             if (businessesResponse.ok) {
                 const businessesData = await businessesResponse.json();
-                console.log('📋 Negocios cargados:', businessesData.length);
-                this.updateStats(businessesData);
-                this.loadBusinessesTable(businessesData);
+                console.log('📋 Datos recibidos:', businessesData);
+                
+                // Handle different response formats
+                let businesses = [];
+                if (Array.isArray(businessesData)) {
+                    businesses = businessesData;
+                } else if (businessesData.businesses && Array.isArray(businessesData.businesses)) {
+                    businesses = businessesData.businesses;
+                } else if (businessesData.data && Array.isArray(businessesData.data)) {
+                    businesses = businessesData.data;
+                }
+                
+                console.log('📋 Negocios procesados:', businesses.length);
+                this.updateStats(businesses);
+                this.loadBusinessesTable(businesses);
             }
         } catch (error) {
             console.error('💥 Error cargando datos:', error);
+            // Show fallback stats
+            this.updateStats([]);
         }
     }
 
@@ -277,6 +298,20 @@ class AdminPanelSimple {
 }
 
 // ===================================
+// FUNCIONES GLOBALES DE DEBUG
+// ===================================
+
+// Función para limpiar localStorage y forzar login (para debugging)
+window.forceAdminLogin = function() {
+    console.log('🧹 Forzando limpieza de tokens y login...');
+    localStorage.removeItem('adminToken');
+    if (window.adminPanel) {
+        window.adminPanel.showLogin();
+    }
+    console.log('✅ Login forzado - usar admin/admin123');
+};
+
+// ===================================
 // INICIALIZACIÓN
 // ===================================
 
@@ -284,8 +319,17 @@ console.log('⏳ Esperando DOM...');
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🎯 DOM cargado, inicializando AdminPanelSimple...');
+    
+    // Clear any invalid tokens on page load
+    const existingToken = localStorage.getItem('adminToken');
+    if (existingToken && !existingToken.startsWith('valid-')) {
+        console.log('🧹 Limpiando token inválido al cargar página...');
+        localStorage.removeItem('adminToken');
+    }
+    
     window.adminPanel = new AdminPanelSimple();
     console.log('✅ AdminPanelSimple inicializado correctamente!');
+    console.log('💡 Tip: Si necesitas forzar login, ejecuta: forceAdminLogin()');
 });
 
 console.log('📄 admin-working.js cargado completamente');

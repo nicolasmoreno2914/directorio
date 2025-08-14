@@ -17,17 +17,20 @@ const CACHE_DURATION = 30 * 60 * 1000; // 30 minutos
 async function getRealBusinessesData() {
   console.log('🎯 Obteniendo negocios con datos reales únicamente...');
   
-  // Verificar cache
-  const now = Date.now();
-  if (cachedBusinesses && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
-    console.log('📦 Usando datos en cache');
-    return cachedBusinesses;
-  }
+  // 🚨 CACHE DESHABILITADO TEMPORALMENTE PARA PRUEBAS
+  console.log('🧪 Cache deshabilitado - Forzando datos frescos para prueba de imágenes');
+  // const now = Date.now();
+  // if (cachedBusinesses && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
+  //   console.log('📦 Usando datos en cache');
+  //   return cachedBusinesses;
+  // }
   
   try {
-    // Usar API híbrida para obtener datos reales
-    const api = new HybridRealBusinessAPI();
-    const businesses = await api.getRealBusinesses('Acacías', 'Colombia');
+    // 🧪 FORZAR FALLBACK TEMPORALMENTE PARA PRUEBA DE IMÁGENES
+    console.log('🧪 Usando fallback directo para probar imágenes reales');
+    const businesses = getFallbackBusinesses();
+    // const api = new HybridRealBusinessAPI();
+    // const businesses = await api.getRealBusinesses('Acacías', 'Colombia');
     
     // Formatear datos para compatibilidad con frontend
     const formattedBusinesses = businesses.map((business, index) => ({

@@ -82,14 +82,19 @@ function getFallbackBusinesses() {
       website: "",
       horarios: "Lunes a Domingo: 11:00 AM - 9:00 PM",
       calificacion: 4.5,
-      imagenes: JSON.stringify([]), // Sin imágenes genéricas
+      // IMÁGENES REALES DE PRUEBA (URLs funcionales)
+      imagenes: JSON.stringify([
+        "https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/1307698/pexels-photo-1307698.jpeg?auto=compress&cs=tinysrgb&w=800",
+        "https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&w=800"
+      ]),
       visible_en_directorio: 1,
       lat: 3.9889,
       lon: -73.7561,
-      descripcion: "Comida típica llanera",
-      google_place_id: null,
-      tiene_imagenes_reales: false,
-      fuente_datos: "fallback"
+      descripcion: "Comida típica llanera - Especialidad en carne a la llanera",
+      google_place_id: "ChIJtest123456789",
+      tiene_imagenes_reales: true,
+      fuente_datos: "test_real_images"
     },
     {
       id: 2,

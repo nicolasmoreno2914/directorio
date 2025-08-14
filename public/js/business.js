@@ -47,7 +47,8 @@ async function loadBusinessData() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
         
-        const response = await fetch(`/api/business/${businessId}`, {
+        // Primero obtener todos los negocios con datos reales
+        const response = await fetch('/.netlify/functions/businesses-real', {
             signal: controller.signal
         });
         
@@ -57,10 +58,25 @@ async function loadBusinessData() {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        businessData = await response.json();
-        console.log('✅ Business data loaded:', businessData);
+        const data = await response.json();
+        console.log('📊 Datos reales recibidos:', data);
         
-        // Render immediately - no delays
+        if (!data.success || !Array.isArray(data.data)) {
+            throw new Error('Formato de datos inválido');
+        }
+        
+        // Buscar el negocio específico por ID
+        const business = data.data.find(b => b.id == businessId);
+        
+        if (!business) {
+            throw new Error(`Negocio con ID ${businessId} no encontrado`);
+        }
+        
+        console.log(`✅ Negocio encontrado: ${business.nombre_negocio}`);
+        console.log(`📸 Tiene imágenes reales: ${business.tiene_imagenes_reales}`);
+        console.log(`🏪 Fuente de datos: ${business.fuente_datos}`);
+        
+        businessData = business;
         renderBusinessInfo();
         hideLoading();
         
@@ -246,36 +262,55 @@ function updateBusinessHours() {
 }
 
 function renderBusinessImages(images) {
-    console.log('🖼️ Renderizando imágenes del negocio:', images);
+    console.log('🎯 Renderizando SOLO imágenes reales del negocio:', images);
     
-    if (!images || images.length === 0) {
-        console.log('⚠️ No hay imágenes para mostrar');
+    // Verificar si el negocio tiene imágenes reales
+    const hasRealImages = businessData.tiene_imagenes_reales || false;
+    
+    if (!hasRealImages || !images || images.length === 0) {
+        console.log('🟢 Sin imágenes reales - Mostrando placeholder');
         showEmptyCarousel();
         return;
     }
     
-    // Procesar y validar URLs de imágenes de Google My Business
-    const validImages = images.filter(img => {
-        if (!img.url) {
-            console.warn('⚠️ Imagen sin URL:', img);
-            return false;
-        }
-        return true;
-    }).map(img => {
-        // Asegurar que las URLs de Google My Business tengan la API key correcta
-        if (img.url.includes('maps.googleapis.com') && !img.url.includes('key=')) {
-            img.url += '&key=' + 'AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI';
+    // Procesar solo imágenes reales (no genéricas)
+    let validImages = [];
+    
+    try {
+        // Si images es un string JSON, parsearlo
+        let imageArray = images;
+        if (typeof images === 'string') {
+            imageArray = JSON.parse(images);
         }
         
-        // Usar proxy para evitar problemas CORS con Google My Business
-        if (img.url.includes('maps.googleapis.com')) {
-            img.originalUrl = img.url;
-            img.url = `/api/image-proxy?url=${encodeURIComponent(img.url)}`;
-            console.log(`🔄 Using proxy for image: ${img.originalUrl}`);
-        }
+        // Procesar solo URLs reales del negocio
+        validImages = imageArray.filter(imgUrl => {
+            if (typeof imgUrl !== 'string' || !imgUrl.startsWith('http')) {
+                console.warn('⚠️ URL de imagen inválida:', imgUrl);
+                return false;
+            }
+            return true;
+        }).map(imgUrl => {
+            let processedUrl = imgUrl;
+            
+            // Si es imagen de Google Maps/My Business, usar proxy
+            if (imgUrl.includes('googleapis.com') || imgUrl.includes('maps.googleapis.com')) {
+                processedUrl = `/.netlify/functions/image-proxy?url=${encodeURIComponent(imgUrl)}`;
+                console.log('📸 Imagen real de Google My Business procesada');
+            }
+            
+            return {
+                url: processedUrl,
+                originalUrl: imgUrl,
+                alt: `Imagen real de ${businessData.nombre_negocio}`
+            };
+        });
         
-        return img;
-    });
+    } catch (e) {
+        console.error('❌ Error procesando imágenes reales:', e);
+        showEmptyCarousel();
+        return;
+    }
     
     console.log(`✅ ${validImages.length} imágenes válidas procesadas`);
     

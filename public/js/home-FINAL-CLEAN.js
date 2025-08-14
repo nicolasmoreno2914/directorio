@@ -49,15 +49,29 @@ async function loadBusinesses() {
         // Mostrar loading
         container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #666; font-size: 1.2rem;">🔄 Cargando negocios...</div>';
         
-        console.log('📞 Llamando a /api/businesses...');
-        const businessesResponse = await fetch('/.netlify/functions/businesses');
+        console.log('🎯 Haciendo petición a /businesses-real para obtener solo datos reales...');
+        const response = await fetch('/.netlify/functions/businesses-real');
         
-        if (!businessesResponse.ok) {
-            throw new Error(`HTTP ${businessesResponse.status}: ${businessesResponse.statusText}`);
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
         
-        const businessesData = await businessesResponse.json();
-        console.log('✅ Datos de negocios recibidos:', businessesData);
+        const data = await response.json();
+        console.log('📊 Datos reales recibidos:', data);
+        
+        if (!data.success || !Array.isArray(data.data)) {
+            throw new Error('Formato de datos inválido');
+        }
+        
+        allBusinesses = data.data;
+        console.log(`✅ ${allBusinesses.length} negocios con datos reales cargados`);
+        
+        // Mostrar estadísticas de datos reales
+        if (data.stats) {
+            console.log(`📸 ${data.stats.con_imagenes_reales} negocios con imágenes reales`);
+            console.log(`🏪 ${data.stats.con_google_place_id} negocios con Google Place ID`);
+            console.log('📈 Fuentes:', data.stats.fuentes);
+        }
         
         // OBTENER ESTADO DE VISIBILIDAD DEL ADMIN
         let hiddenBusinesses = [];
@@ -161,9 +175,10 @@ function createBusinessCard(business, globalIndex) {
     card.style.cursor = 'pointer';
     card.onclick = () => window.location.href = `/business.html?id=${business.id}`;
     
-    // Procesar imágenes reales de Google My Business
+    // Procesar SOLO imágenes reales del negocio (Google My Business)
     let images = [];
     let realImageUrl = null;
+    const hasRealImages = business.tiene_imagenes_reales || false;
     
     try {
         if (typeof business.imagenes === 'string') {
@@ -172,21 +187,23 @@ function createBusinessCard(business, globalIndex) {
             images = business.imagenes;
         }
         
-        // Buscar primera imagen válida
-        if (images.length > 0) {
+        // Solo usar imágenes si son reales del negocio
+        if (hasRealImages && images.length > 0) {
             const firstImage = images[0];
             if (typeof firstImage === 'string' && firstImage.startsWith('http')) {
-                // Si es una imagen de Google Maps, usar proxy
+                // Si es una imagen de Google Maps/My Business, usar proxy
                 if (firstImage.includes('googleapis.com') || firstImage.includes('maps.googleapis.com')) {
                     realImageUrl = `/.netlify/functions/image-proxy?url=${encodeURIComponent(firstImage)}`;
                 } else {
                     realImageUrl = firstImage;
                 }
-                console.log(`🇺️ Imagen real encontrada para ${business.nombre_negocio}: ${firstImage.substring(0, 50)}...`);
+                console.log(`📸 Imagen REAL del negocio: ${business.nombre_negocio}`);
             }
+        } else {
+            console.log(`🟢 Sin imágenes reales para: ${business.nombre_negocio} - Usando placeholder`);
         }
     } catch (e) {
-        console.warn(`⚠️ Error parsing images for ${business.nombre_negocio}:`, e);
+        console.warn(`⚠️ Error procesando imágenes para ${business.nombre_negocio}:`, e);
     }
     
     // Estilo de fondo: imagen real o gradiente verde elegante

@@ -88,38 +88,33 @@ async function loadBusinesses() {
             console.warn('⚠️ No se pudo obtener estado de visibilidad, mostrando todos:', visError);
         }
         
-        if (businessesData.success && businessesData.businesses && Array.isArray(businessesData.businesses)) {
-            // FILTRAR NEGOCIOS BASÁNDOSE EN ESTADO DE VISIBILIDAD ADMIN
-            const allBusinessesData = businessesData.businesses;
-            allBusinesses = allBusinessesData.filter(business => {
-                const isHidden = hiddenBusinesses.includes(business.id);
-                return !isHidden; // Solo mostrar los que NO están ocultos
-            });
-            
-            console.log(`🎯 FILTRADO APLICADO:`);
-            console.log(`   📊 Total negocios: ${allBusinessesData.length}`);
-            console.log(`   👁️ Negocios ocultos: ${hiddenBusinesses.length} [${hiddenBusinesses.join(', ')}]`);
-            console.log(`   ✅ Negocios visibles: ${allBusinesses.length}`);
-            console.log(`   🔄 Última actualización admin: ${visibilityData?.lastUpdated || 'N/A'}`);
-            
-            if (allBusinesses.length === 0) {
-                console.warn('⚠️ No hay negocios visibles para mostrar');
-            }
-            
-            // Renderizar primera página
-            renderPage(1);
-            setupPagination();
-            updateCounter();
-            
-            // Ocultar indicador de carga
-            const loadingSpinner = document.getElementById('loadingSpinner');
-            if (loadingSpinner) {
-                loadingSpinner.style.display = 'none';
-                console.log('✅ Indicador de carga ocultado');
-            }
-            
-        } else {
-            throw new Error('Formato de datos inválido');
+        // FILTRAR NEGOCIOS BASÁNDOSE EN ESTADO DE VISIBILIDAD ADMIN
+        const allBusinessesData = data.data; // Usar data.data del nuevo formato
+        allBusinesses = allBusinessesData.filter(business => {
+            const isHidden = hiddenBusinesses.includes(business.id);
+            return !isHidden; // Solo mostrar los que NO están ocultos
+        });
+        
+        console.log(`🎯 FILTRADO APLICADO:`);
+        console.log(`   📊 Total negocios: ${allBusinessesData.length}`);
+        console.log(`   👁️ Negocios ocultos: ${hiddenBusinesses.length} [${hiddenBusinesses.join(', ')}]`);
+        console.log(`   ✅ Negocios visibles: ${allBusinesses.length}`);
+        console.log(`   🔄 Última actualización admin: ${visibilityData?.lastUpdated || 'N/A'}`);
+        
+        if (allBusinesses.length === 0) {
+            console.warn('⚠️ No hay negocios visibles para mostrar');
+        }
+        
+        // Renderizar primera página
+        renderPage(1);
+        setupPagination();
+        updateCounter();
+        
+        // Ocultar indicador de carga
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'none';
+            console.log('✅ Indicador de carga ocultado');
         }
         
     } catch (error) {

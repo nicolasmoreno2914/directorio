@@ -46,8 +46,8 @@ async function loadBusinessData() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
         
-        // Usar endpoint rápido que está funcionando
-        const response = await fetch('/.netlify/functions/businesses-fast', {
+        // Usar endpoint que está funcionando correctamente
+        const response = await fetch('/.netlify/functions/businesses-real', {
             signal: controller.signal
         });
         

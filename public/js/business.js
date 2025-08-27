@@ -29,9 +29,20 @@ async function loadBusinessData() {
     try {
         console.log(`📊 Cargando datos para negocio ID: ${businessId}`);
         
-        // Fetch with shorter timeout
+        // First try embedded data for immediate rendering
+        if (typeof EMBEDDED_BUSINESSES !== 'undefined' && EMBEDDED_BUSINESSES.length > 0) {
+            const embeddedBusiness = EMBEDDED_BUSINESSES.find(b => parseInt(b.id) === businessId);
+            if (embeddedBusiness) {
+                console.log(`✅ Usando datos embebidos para: ${embeddedBusiness.nombre_negocio}`);
+                businessData = embeddedBusiness;
+                renderBusiness(embeddedBusiness);
+                return;
+            }
+        }
+        
+        // Fetch with shorter timeout as fallback
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
         
         const response = await fetch('/.netlify/functions/businesses-real', {
             signal: controller.signal,
@@ -48,7 +59,7 @@ async function loadBusinessData() {
         }
         
         const data = await response.json();
-        console.log('📊 Datos recibidos:', data);
+        console.log('📊 Datos recibidos del backend:', data);
         
         if (!data.success || !Array.isArray(data.data)) {
             throw new Error('Formato de respuesta inválido');
@@ -58,11 +69,11 @@ async function loadBusinessData() {
         const business = data.data.find(b => parseInt(b.id) === businessId);
         
         if (!business) {
-            console.error(`❌ Negocio con ID ${businessId} no encontrado en:`, data.data.map(b => `ID: ${b.id} - ${b.nombre_negocio}`));
+            console.error(`❌ Negocio con ID ${businessId} no encontrado en backend`);
             throw new Error(`Negocio con ID ${businessId} no encontrado`);
         }
         
-        console.log(`✅ Negocio encontrado: ${business.nombre_negocio}`);
+        console.log(`✅ Negocio encontrado en backend: ${business.nombre_negocio}`);
         businessData = business;
         
         // Render business data
@@ -71,7 +82,7 @@ async function loadBusinessData() {
     } catch (error) {
         console.error('❌ Error cargando datos:', error);
         
-        // Static fallback data
+        // Final fallback to static data
         const staticBusinesses = [
             {
                 id: 1,
@@ -83,9 +94,9 @@ async function loadBusinessData() {
                 horarios: "Lunes a Domingo: 6:00 AM - 8:00 PM",
                 calificacion: 5.0,
                 imagenes: JSON.stringify([
-                    "https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg",
-                    "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg",
-                    "https://images.pexels.com/photos/1633525/pexels-photo-1633525.jpeg"
+                    "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpeo5PSqPMOjFRKidta9lXKbaXgkTNev6ZUsOHT5gxx-xbBhx2wPntodE7KyJlUdwF-eYaMzMaWWXiTXx1sIeA8UUZlkLPMi_pP4I7QVLmU-x8Hyo-t4QGipr_AzmWyWxnUNi_6ll9ASLphrzQoosIrdPDJM9e5DsHrgtuFz2YuQelgGzJmhSAIMJuhhxlSnJNA9uvsX2wxvwiMeaEmpNL15jlzuJBqb76ha7BGAqLFqxQTyumU4ijNoNDdt5kxI0zIfwXtf-oj-xTAc0pYdv6dbctZCmWr7Z5yHOKlfq-zJPg&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
+                    "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpf-iywcpBL-RvS6Wu5B-2ZKAF0LCfciL29LVon_8Mi-ibvpJtkPXY0nIPBihRBvbmXxKFQL18PSXskhcZ4S-CSH0-npaFvdB5LN8_or3tXbDR20HosI_Veupg1slqDCwb_l7XOY1efJ45EZw7d4MrjnFGxC0A8pZl3CJ99N-IM-gz4uEgTn7aXilqryM-pHFQQQu1exm9XzuSnAdKtlCAlUW4Mx6k00AxFsO5nmzKooyjwyD_ya95XDvKO-ARmtw2emXF_25EaWMR01qilrtfRrQwlVQoRgBHVwIG1PFeSvRDly1g0CED2bwviyL-sX9iUTIQNOFQerS9fSUDRfa7aHQYSr4C8gUtYdOx6jJnm4HuzHlpuTumAZjYXND6HOy6ySVZNK0xQG9NbI6_HLQJDhqVTPmW6I6RZNhSipCRpIz1RF&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
+                    "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpd65RJTxlN5hOjP5IksEK3L1MDdUefU1AkdsVceseYmbqFxv7-Oq0aJa9H3XcFNViSto419DnDiy_T40dTK1VcRyGyZWc0vEX7pfyFEY1PNt539fuks_wVnAwVemWBsr25AYrwQSVscUzSFtInJNGiOtgnyzmblSJSSSfiYnocMCXyDrbkJmEoZZvNJkHBQfpxzAQvY2h8CiqiNE-VhjqsGmvJS7mDnawXn2llw7D-uevJxTmMO_FKmxYRFuIvV8BrchinYDCADYjNSnrTZdiN21Y10Y_ko6tpMutN2Wm83vk3ifQULE6fL18j21CfAqR1DLVllUqJ1GnXsH2ZAKwNEmbt2ChxJpAUHryvK1I_E4YTMbfd8JHsduaoFO-GULC3L_UI7MpNnGn9S3wC6qcd2J9cmjgLn6obAXd-ucHc0zU_6&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800"
                 ]),
                 descripcion: "Deliciosas arepas tradicionales llaneras hechas con ingredientes frescos y auténticos sabores de la región."
             },
@@ -99,9 +110,9 @@ async function loadBusinessData() {
                 horarios: "Lunes a Domingo: 11:00 AM - 10:00 PM",
                 calificacion: 4.5,
                 imagenes: JSON.stringify([
-                    "https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg",
-                    "https://images.pexels.com/photos/1307698/pexels-photo-1307698.jpeg",
-                    "https://images.pexels.com/photos/958545/pexels-photo-958.jpeg"
+                    "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpeo5PSqPMOjFRKidta9lXKbaXgkTNev6ZUsOHT5gxx-xbBhx2wPntodE7KyJlUdwF-eYaMzMaWWXiTXx1sIeA8UUZlkLPMi_pP4I7QVLmU-x8Hyo-t4QGipr_AzmWyWxnUNi_6ll9ASLphrzQoosIrdPDJM9e5DsHrgtuFz2YuQelgGzJmhSAIMJuhhxlSnJNA9uvsX2wxvwiMeaEmpNL15jlzuJBqb76ha7BGAqLFqxQTyumU4ijNoNDdt5kxI0zIfwXtf-oj-xTAc0pYdv6dbctZCmWr7Z5yHOKlfq-zJPg&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
+                    "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpf-iywcpBL-RvS6Wu5B-2ZKAF0LCfciL29LVon_8Mi-ibvpJtkPXY0nIPBihRBvbmXxKFQL18PSXskhcZ4S-CSH0-npaFvdB5LN8_or3tXbDR20HosI_Veupg1slqDCwb_l7XOY1efJ45EZw7d4MrjnFGxC0A8pZl3CJ99N-IM-gz4uEgTn7aXilqryM-pHFQQQu1exm9XzuSnAdKtlCAlUW4Mx6k00AxFsO5nmzKooyjwyD_ya95XDvKO-ARmtw2emXF_25EaWMR01qilrtfRrQwlVQoRgBHVwIG1PFeSvRDly1g0CED2bwviyL-sX9iUTIQNOFQerS9fSUDRfa7aHQYSr4C8gUtYdOx6jJnm4HuzHlpuTumAZjYXND6HOy6ySVZNK0xQG9NbI6_HLQJDhqVTPmW6I6RZNhSipCRpIz1RF&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
+                    "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpd65RJTxlN5hOjP5IksEK3L1MDdUefU1AkdsVceseYmbqFxv7-Oq0aJa9H3XcFNViSto419DnDiy_T40dTK1VcRyGyZWc0vEX7pfyFEY1PNt539fuks_wVnAwVemWBsr25AYrwQSVscUzSFtInJNGiOtgnyzmblSJSSSfiYnocMCXyDrbkJmEoZZvNJkHBQfpxzAQvY2h8CiqiNE-VhjqsGmvJS7mDnawXn2llw7D-uevJxTmMO_FKmxYRFuIvV8BrchinYDCADYjNSnrTZdiN21Y10Y_ko6tpMutN2Wm83vk3ifQULE6fL18j21CfAqR1DLVllUqJ1GnXsH2ZAKwNEmbt2ChxJpAUHryvK1I_E4YTMbfd8JHsduaoFO-GULC3L_UI7MpNnGn9S3wC6qcd2J9cmjgLn6obAXd-ucHc0zU_6&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800"
                 ]),
                 descripcion: "Auténtica comida llanera con los mejores cortes de carne y platos tradicionales de la región."
             }
@@ -110,7 +121,7 @@ async function loadBusinessData() {
         const staticBusiness = staticBusinesses.find(b => b.id === businessId);
         
         if (staticBusiness) {
-            console.log(`✅ Usando datos estáticos para: ${staticBusiness.nombre_negocio}`);
+            console.log(`✅ Usando datos estáticos finales para: ${staticBusiness.nombre_negocio}`);
             businessData = staticBusiness;
             renderBusiness(staticBusiness);
         } else {

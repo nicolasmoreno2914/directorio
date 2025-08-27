@@ -48,7 +48,7 @@ async function loadBusinessData() {
         const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
         
         // Primero obtener todos los negocios con datos reales
-        const response = await fetch('/.netlify/functions/businesses-real', {
+        const response = await fetch('/.netlify/functions/businesses-fast', {
             signal: controller.signal
         });
         
@@ -326,72 +326,63 @@ function renderBusinessImages(images) {
         return 0;
     });
     
-    console.log(`✅ Mostrando TODAS las ${prioritizedImages.length} imágenes en carrusel de 3 por slide`);
+    console.log(`✅ Mostrando 3 cajas fijas con imágenes reales de Google My Business`);
     
-    // Variables globales para el carrusel
-    totalImages = prioritizedImages.length;
-    imagesPerSlide = 3;
-    totalSlides = Math.ceil(totalImages / imagesPerSlide);
-    currentSlide = 0;
+    // Tomar solo las primeras 3 imágenes para las 3 cajas fijas
+    const displayImages = prioritizedImages.slice(0, 3);
     
-    // Generar slides con 3 imágenes cada uno
+    // Generar 3 cajas fijas del mismo tamaño
     const carouselTrack = document.getElementById('carouselTrack');
-    let slidesHTML = '';
+    let boxesHTML = '';
     
-    for (let slideIndex = 0; slideIndex < totalSlides; slideIndex++) {
-        const startIndex = slideIndex * imagesPerSlide;
-        const endIndex = Math.min(startIndex + imagesPerSlide, totalImages);
-        const slideImages = prioritizedImages.slice(startIndex, endIndex);
+    for (let i = 0; i < 3; i++) {
+        const image = displayImages[i];
         
-        let slideHTML = '<div class="carousel-slide">';
-        
-        slideImages.forEach((image, index) => {
-            const globalIndex = startIndex + index;
-            console.log(`🖼️ Procesando imagen ${globalIndex + 1}:`, image.url);
-            
-            slideHTML += `
-                <div class="carousel-item" onclick="openImageModal('${image.url}', '${image.alt || 'Imagen del negocio'}')">
+        if (image) {
+            console.log(`🖼️ Caja ${i + 1}: ${image.url}`);
+            boxesHTML += `
+                <div class="image-box" onclick="openImageModal('${image.url}', '${image.alt || 'Imagen del negocio'}')">
                     <img src="${image.url}" 
                          alt="${image.alt || 'Imagen del negocio'}" 
-                         class="carousel-image" 
+                         class="box-image" 
                          loading="lazy"
                          crossorigin="anonymous"
                          referrerpolicy="no-referrer-when-downgrade"
-                         onerror="console.error('Error cargando imagen:', this.src); this.style.display='none';"
-                         onload="console.log('✅ Imagen cargada:', this.src);">
-                    <div class="image-counter">${globalIndex + 1}/${totalImages}</div>
+                         onerror="console.error('Error cargando imagen:', this.src); this.parentElement.classList.add('error');"
+                         onload="console.log('✅ Imagen cargada en caja ${i + 1}:', this.src);">
+                    <div class="image-number">${i + 1}</div>
                 </div>
             `;
-        });
-        
-        // Rellenar con espacios vacíos si es necesario
-        while (slideImages.length < imagesPerSlide && slideIndex < totalSlides - 1) {
-            slideHTML += '<div class="carousel-item" style="visibility: hidden;"></div>';
-            slideImages.push(null);
+        } else {
+            // Caja vacía con placeholder
+            boxesHTML += `
+                <div class="image-box empty">
+                    <div class="placeholder-content">
+                        <div class="placeholder-icon">🏪</div>
+                        <div class="placeholder-text">Sin imagen</div>
+                    </div>
+                    <div class="image-number">${i + 1}</div>
+                </div>
+            `;
         }
-        
-        slideHTML += '</div>';
-        slidesHTML += slideHTML;
     }
     
-    carouselTrack.innerHTML = slidesHTML;
+    carouselTrack.innerHTML = boxesHTML;
+    carouselTrack.className = 'image-grid'; // Cambiar clase para grid layout
     
-    // El ancho del track se maneja desde CSS (400% para 4 slides)
+    // Ocultar controles de navegación (no necesarios para 3 cajas fijas)
+    const indicators = document.getElementById('carouselIndicators');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
     
-    // Generar indicadores basados en slides
-    const indicatorsHTML = Array.from({length: totalSlides}, (_, index) => {
-        return `<div class="indicator ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></div>`;
-    }).join('');
-    
-    document.getElementById('carouselIndicators').innerHTML = indicatorsHTML;
+    if (indicators) indicators.style.display = 'none';
+    if (prevBtn) prevBtn.style.display = 'none';
+    if (nextBtn) nextBtn.style.display = 'none';
     
     // Mostrar la galería
     document.getElementById('businessGallery').style.display = 'block';
     
-    // Inicializar carrusel
-    initializeCarousel(totalImages);
-    
-    console.log(`✅ Carrusel inicializado con ${totalSlides} slides de 3 imágenes cada uno`);
+    console.log(`✅ Grid de 3 cajas inicializado con ${displayImages.length} imágenes reales`);
 }
 
 function getCategoryIcon(category) {

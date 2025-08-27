@@ -275,8 +275,14 @@ body {
     transform: scale(1.2);
 }
 
-/* Responsive Design para el Carrusel */
+/* Responsive Design para el Grid de 3 Cajas */
 @media (max-width: 768px) {
+    .image-grid {
+        grid-template-columns: 1fr;
+        height: 250px;
+        gap: 12px;
+    }
+    
     .carousel-item {
         flex: 0 0 100%; /* Una imagen en móvil */
     }
@@ -906,11 +912,21 @@ body {
     overflow: hidden;
 }
 
+/* Grid de 3 cajas fijas para imágenes */
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+    height: 300px;
+    padding: 0;
+    margin: 0;
+}
+
 .carousel-track {
     display: flex;
     height: 100%;
     width: 400%; /* 4 slides × 100% cada uno */
-    position: relative;
     transition: transform 0.3s ease;
 }
 
@@ -924,14 +940,71 @@ body {
     box-sizing: border-box;
 }
 
+/* Estilos para las cajas de imágenes del grid */
+.image-box {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    background: #f3f4f6;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.image-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.box-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.image-box.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.placeholder-content {
+    text-align: center;
+}
+
+.placeholder-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+.placeholder-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.image-number {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
 .carousel-item {
     width: calc(33.333% - 10px);
     height: 100%;
     flex-shrink: 0;
     position: relative;
-    display: block;
     border-radius: 12px;
     overflow: hidden;
+    cursor: pointer;
     box-sizing: border-box;
 }
 

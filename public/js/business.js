@@ -1,54 +1,44 @@
-// Ultra-Fast Business Landing Page JavaScript
+// Simple Business Landing Page JavaScript - Optimized for immediate execution
 
-// Simple function-based approach - optimized for speed
 let businessData = null;
 let businessId = null;
-let isLoading = false;
 
-// Initialize when DOM is ready - with performance optimization
+// Initialize immediately when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    // Prevent multiple initializations
-    if (isLoading) return;
-    isLoading = true;
-    
-    console.log('🚀 Fast init business page...');
+    console.log('🚀 Iniciando business page simple...');
     initBusinessPage();
 });
 
 function initBusinessPage() {
     // Get business ID from URL
-    businessId = getBusinessIdFromUrl();
+    const urlParams = new URLSearchParams(window.location.search);
+    businessId = parseInt(urlParams.get('id'));
+    
+    console.log(`🎯 Business ID: ${businessId}`);
     
     if (!businessId) {
         showError('ID de negocio no válido');
         return;
     }
     
-    console.log(`🎯 Business ID: ${businessId}`);
-    
     // Load business data
     loadBusinessData();
 }
 
-function getBusinessIdFromUrl() {
-    // Leer parámetro 'id' de la URL (?id=valor)
-    const urlParams = new URLSearchParams(window.location.search);
-    const businessId = urlParams.get('id');
-    console.log(`🔍 Extrayendo ID de URL: ${businessId}`);
-    return businessId;
-}
-
 async function loadBusinessData() {
     try {
-        console.log(`📊 Loading business data for: ${businessId}`);
+        console.log(`📊 Cargando datos para negocio ID: ${businessId}`);
         
-        // Add timeout to prevent hanging
+        // Fetch with shorter timeout
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
         
-        // Usar endpoint que está funcionando correctamente
         const response = await fetch('/.netlify/functions/businesses-real', {
-            signal: controller.signal
+            signal: controller.signal,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
         });
         
         clearTimeout(timeoutId);
@@ -58,34 +48,30 @@ async function loadBusinessData() {
         }
         
         const data = await response.json();
-        console.log('📊 Datos rápidos recibidos:', data);
+        console.log('📊 Datos recibidos:', data);
         
         if (!data.success || !Array.isArray(data.data)) {
             throw new Error('Formato de respuesta inválido');
         }
         
-        // Buscar el negocio específico por ID
-        const business = data.data.find(b => b.id == businessId);
+        // Find business by ID
+        const business = data.data.find(b => parseInt(b.id) === businessId);
         
         if (!business) {
+            console.error(`❌ Negocio con ID ${businessId} no encontrado en:`, data.data.map(b => `ID: ${b.id} - ${b.nombre_negocio}`));
             throw new Error(`Negocio con ID ${businessId} no encontrado`);
         }
         
         console.log(`✅ Negocio encontrado: ${business.nombre_negocio}`);
-        console.log(`📸 Tiene imágenes reales: ${business.tiene_imagenes_reales}`);
-        console.log(`🏪 Fuente de datos: ${business.fuente_datos}`);
-        
         businessData = business;
         
         // Render business data
-        renderBusinessData(business);
+        renderBusiness(business);
         
     } catch (error) {
-        console.error('❌ Error cargando datos del negocio:', error);
+        console.error('❌ Error cargando datos:', error);
         
-        // Fallback a datos estáticos si el endpoint falla
-        console.log('🔄 Intentando con datos estáticos de respaldo...');
-        
+        // Static fallback data
         const staticBusinesses = [
             {
                 id: 1,
@@ -101,13 +87,7 @@ async function loadBusinessData() {
                     "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg",
                     "https://images.pexels.com/photos/1633525/pexels-photo-1633525.jpeg"
                 ]),
-                visible_en_directorio: 1,
-                lat: 3.9889,
-                lon: -73.7561,
-                descripcion: "Deliciosas arepas tradicionales llaneras hechas con ingredientes frescos y auténticos sabores de la región.",
-                google_place_id: "ChIJtest123456789",
-                tiene_imagenes_reales: true,
-                fuente_datos: "static_fallback"
+                descripcion: "Deliciosas arepas tradicionales llaneras hechas con ingredientes frescos y auténticos sabores de la región."
             },
             {
                 id: 2,
@@ -121,112 +101,126 @@ async function loadBusinessData() {
                 imagenes: JSON.stringify([
                     "https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg",
                     "https://images.pexels.com/photos/1307698/pexels-photo-1307698.jpeg",
-                    "https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg"
+                    "https://images.pexels.com/photos/958545/pexels-photo-958.jpeg"
                 ]),
-                visible_en_directorio: 1,
-                lat: 3.9889,
-                lon: -73.7561,
-                descripcion: "Auténtica comida llanera con los mejores cortes de carne y platos tradicionales de la región.",
-                google_place_id: "ChIJtest123456790",
-                tiene_imagenes_reales: true,
-                fuente_datos: "static_fallback"
+                descripcion: "Auténtica comida llanera con los mejores cortes de carne y platos tradicionales de la región."
             }
         ];
         
-        const staticBusiness = staticBusinesses.find(b => b.id == businessId);
+        const staticBusiness = staticBusinesses.find(b => b.id === businessId);
         
         if (staticBusiness) {
             console.log(`✅ Usando datos estáticos para: ${staticBusiness.nombre_negocio}`);
             businessData = staticBusiness;
-            renderBusinessData(staticBusiness);
+            renderBusiness(staticBusiness);
         } else {
             showError('Negocio no encontrado');
         }
     }
 }
 
-function renderBusinessData(business) {
-    console.log('🎨 Renderizando datos del negocio...');
+function renderBusiness(business) {
+    console.log('🎨 Renderizando negocio...');
     
-    // Update page title
-    document.title = `${business.nombre_negocio} - Yo Compro Acacías`;
-    
-    // Update hero section
-    const heroTitle = document.getElementById('heroTitle');
-    if (heroTitle) heroTitle.textContent = business.nombre_negocio;
-    
-    const heroSubtitle = document.getElementById('heroSubtitle');
-    if (heroSubtitle) {
-        const category = business.categoria || 'negocio local';
-        heroSubtitle.textContent = `Descubre este increíble ${category.toLowerCase()} en Acacías, Meta`;
-    }
-    
-    // Update rating
-    const ratingElements = document.querySelectorAll('#businessRating');
-    ratingElements.forEach(element => {
-        element.textContent = business.calificacion ? business.calificacion.toFixed(1) : 'N/A';
-    });
-    
-    // Update business name in why section
-    const businessNameTitle = document.getElementById('businessNameTitle');
-    if (businessNameTitle) businessNameTitle.textContent = business.nombre_negocio.toUpperCase();
-    
-    // Update address
-    const addressElements = document.querySelectorAll('#businessAddress, #businessAddressDetail');
-    addressElements.forEach(element => {
-        element.textContent = business.direccion || 'Ubicado en Acacías, Meta';
-    });
-    
-    // Update description
-    const descriptionElements = document.querySelectorAll('#businessDescription');
-    descriptionElements.forEach(element => {
-        element.textContent = business.descripcion || `${business.nombre_negocio} es un negocio local comprometido con la excelencia.`;
-    });
-    
-    // Update phone
-    const businessPhone = document.getElementById('businessPhone');
-    const phoneSection = document.getElementById('phoneSection');
-    if (business.telefono && business.telefono !== 'Teléfono no disponible') {
-        if (businessPhone) businessPhone.textContent = business.telefono;
-        if (phoneSection) phoneSection.style.display = 'flex';
-    } else {
-        if (phoneSection) phoneSection.style.display = 'none';
-    }
-    
-    // Update website
-    const businessWebsite = document.getElementById('businessWebsite');
-    const websiteSection = document.getElementById('websiteSection');
-    if (business.website) {
-        if (businessWebsite) {
-            businessWebsite.href = business.website;
-            businessWebsite.textContent = 'Visitar sitio web';
+    try {
+        // Update page title
+        document.title = `${business.nombre_negocio} - Yo Compro Acacías`;
+        
+        // Update hero section
+        const heroTitle = document.getElementById('heroTitle');
+        if (heroTitle) {
+            heroTitle.textContent = business.nombre_negocio;
         }
-        if (websiteSection) websiteSection.style.display = 'flex';
-    } else {
-        if (websiteSection) websiteSection.style.display = 'none';
+        
+        const heroSubtitle = document.getElementById('heroSubtitle');
+        if (heroSubtitle) {
+            const category = business.categoria || 'negocio local';
+            heroSubtitle.textContent = `Descubre este increíble ${category.toLowerCase()} en Acacías, Meta`;
+        }
+        
+        // Update rating
+        const ratingElements = document.querySelectorAll('#businessRating');
+        ratingElements.forEach(element => {
+            if (element) {
+                element.textContent = business.calificacion ? business.calificacion.toFixed(1) : 'N/A';
+            }
+        });
+        
+        // Update business name in sections
+        const businessNameTitle = document.getElementById('businessNameTitle');
+        if (businessNameTitle) {
+            businessNameTitle.textContent = business.nombre_negocio.toUpperCase();
+        }
+        
+        // Update address
+        const addressElements = document.querySelectorAll('#businessAddress, #businessAddressDetail');
+        addressElements.forEach(element => {
+            if (element) {
+                element.textContent = business.direccion || 'Ubicado en Acacías, Meta';
+            }
+        });
+        
+        // Update description
+        const descriptionElements = document.querySelectorAll('#businessDescription');
+        descriptionElements.forEach(element => {
+            if (element) {
+                element.textContent = business.descripcion || `${business.nombre_negocio} es un negocio local comprometido con la excelencia.`;
+            }
+        });
+        
+        // Update phone
+        const businessPhone = document.getElementById('businessPhone');
+        const phoneSection = document.getElementById('phoneSection');
+        if (business.telefono && business.telefono !== 'Teléfono no disponible') {
+            if (businessPhone) businessPhone.textContent = business.telefono;
+            if (phoneSection) phoneSection.style.display = 'flex';
+        } else {
+            if (phoneSection) phoneSection.style.display = 'none';
+        }
+        
+        // Update website
+        const businessWebsite = document.getElementById('businessWebsite');
+        const websiteSection = document.getElementById('websiteSection');
+        if (business.website) {
+            if (businessWebsite) {
+                businessWebsite.href = business.website;
+                businessWebsite.textContent = 'Visitar sitio web';
+            }
+            if (websiteSection) websiteSection.style.display = 'flex';
+        } else {
+            if (websiteSection) websiteSection.style.display = 'none';
+        }
+        
+        // Update hours
+        const businessHours = document.getElementById('businessHours');
+        if (businessHours) {
+            businessHours.innerHTML = `<p>${business.horarios || 'Horarios no disponibles'}</p>`;
+        }
+        
+        // Render images
+        renderImages(business);
+        
+        // Setup action buttons
+        setupActionButtons(business);
+        
+        // Hide loading and show content
+        hideLoading();
+        
+        console.log('✅ Renderizado completado exitosamente');
+        
+    } catch (error) {
+        console.error('❌ Error en renderizado:', error);
+        showError('Error mostrando información del negocio');
     }
-    
-    // Update hours
-    const businessHours = document.getElementById('businessHours');
-    if (businessHours) {
-        businessHours.innerHTML = `<p>${business.horarios || 'Horarios no disponibles'}</p>`;
-    }
-    
-    // Render images
-    renderImages(business);
-    
-    // Setup action buttons
-    setupActionButtons(business);
-    
-    // Hide loading and show content
-    hideLoading();
-    
-    console.log('✅ Renderizado completado');
 }
 
 function renderImages(business) {
+    const carouselTrack = document.getElementById('carouselTrack');
+    if (!carouselTrack) return;
+    
     let images = business.imagenes;
     
+    // Parse images if they're in JSON string format
     if (typeof images === 'string') {
         try {
             images = JSON.parse(images);
@@ -236,13 +230,10 @@ function renderImages(business) {
         }
     }
     
-    const carouselTrack = document.getElementById('carouselTrack');
-    if (!carouselTrack) return;
-    
     if (images && Array.isArray(images) && images.length > 0) {
         let boxesHTML = '';
         
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < Math.min(3, images.length); i++) {
             const image = images[i];
             
             if (image) {
@@ -252,18 +243,7 @@ function renderImages(business) {
                              alt="Imagen de ${business.nombre_negocio}" 
                              class="box-image" 
                              loading="lazy"
-                             onerror="this.parentElement.classList.add('error');"
-                             onload="console.log('✅ Imagen cargada en caja ${i + 1}');">
-                        <div class="image-number">${i + 1}</div>
-                    </div>
-                `;
-            } else {
-                boxesHTML += `
-                    <div class="image-box empty">
-                        <div class="placeholder-content">
-                            <div class="placeholder-icon">🏪</div>
-                            <div class="placeholder-text">Sin imagen</div>
-                        </div>
+                             onerror="this.parentElement.classList.add('error');">
                         <div class="image-number">${i + 1}</div>
                     </div>
                 `;
@@ -273,7 +253,7 @@ function renderImages(business) {
         carouselTrack.innerHTML = boxesHTML;
         carouselTrack.className = 'image-grid';
         
-        // Hide navigation controls
+        // Hide navigation controls for grid layout
         const indicators = document.getElementById('carouselIndicators');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
@@ -282,7 +262,9 @@ function renderImages(business) {
         if (prevBtn) prevBtn.style.display = 'none';
         if (nextBtn) nextBtn.style.display = 'none';
         
-        document.getElementById('businessGallery').style.display = 'block';
+        // Show gallery section
+        const gallery = document.getElementById('businessGallery');
+        if (gallery) gallery.style.display = 'block';
     }
 }
 
@@ -298,10 +280,7 @@ function setupActionButtons(business) {
             mainActionBtn.onclick = () => window.open(business.website, '_blank');
         } else {
             mainActionBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> VER UBICACIÓN';
-            mainActionBtn.onclick = () => {
-                const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.direccion)}`;
-                window.open(url, '_blank');
-            };
+            mainActionBtn.onclick = () => openDirections(business.direccion);
         }
     }
     
@@ -330,11 +309,15 @@ function setupActionButtons(business) {
     // Directions buttons
     const directionsBtns = document.querySelectorAll('#directionsBtn, #directionsActionBtn');
     directionsBtns.forEach(btn => {
-        btn.onclick = () => {
-            const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.direccion)}`;
-            window.open(url, '_blank');
-        };
+        if (btn) {
+            btn.onclick = () => openDirections(business.direccion);
+        }
     });
+}
+
+function openDirections(address) {
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    window.open(url, '_blank');
 }
 
 function hideLoading() {
@@ -356,4 +339,6 @@ function showError(message) {
     
     const errorContent = document.querySelector('.error-content p');
     if (errorContent) errorContent.textContent = message;
+    
+    console.error(`❌ Mostrando error: ${message}`);
 }

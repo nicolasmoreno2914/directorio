@@ -85,13 +85,11 @@ function getFallbackBusinesses() {
       website: "",
       horarios: "Lunes a Domingo: 11:00 AM - 9:00 PM",
       calificacion: 4.5,
-      // IMÁGENES REALES DE GOOGLE MY BUSINESS (URLs funcionales)
+      // IMÁGENES REALES DE GOOGLE MY BUSINESS - Limón Mandarino Restaurante (URLs válidas)
       imagenes: JSON.stringify([
-        "https://maps.googleapis.com/maps/api/place/photo?photoreference=AUc7tXWQxVmCqGOdVJYnKYS8DfkzMzVtKqGxRzQpVmCqGOdVJYnKYS8DfkzMzVt&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
-        "https://maps.googleapis.com/maps/api/place/photo?photoreference=AUc7tXWQxVmCqGOdVJYnKYS8DfkzMzVtKqGxRzQpVmCqGOdVJYnKYS8DfkzMzVu&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
-        "https://maps.googleapis.com/maps/api/place/photo?photoreference=AUc7tXWQxVmCqGOdVJYnKYS8DfkzMzVtKqGxRzQpVmCqGOdVJYnKYS8DfkzMzVv&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
-        "https://maps.googleapis.com/maps/api/place/photo?photoreference=AUc7tXWQxVmCqGOdVJYnKYS8DfkzMzVtKqGxRzQpVmCqGOdVJYnKYS8DfkzMzVu&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
-        "https://maps.googleapis.com/maps/api/place/photo?photoreference=AUc7tXWQxVmCqGOdVJYnKYS8DfkzMzVtKqGxRzQpVmCqGOdVJYnKYS8DfkzMzVv&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800"
+        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpdyUbaWb7ckj9CmXQ0lHmMhtn4mEPENA1s_lNvlmhHqrsGggfUUruH03lgU_F0iu-DDNFJu8dJ9VWMKgQrCKcyPDxyb1t8pVF5TCkkV2_wWnflsTgolmH-wzTyrJK9UlGbz6V1Dce0jafn175meCsX3IEUOapV3tdfvd_-sHyz8KmGSuhOKzFKx82V5tkM-Le2pLdD4RdHY-og2-qYllRUIYr22ieIIVcQ0izJ8EANg9OCLN5cSr6eF1XRkPxP_3nqzhn0ICGDZmDblFMZLWg06z5Rag5YscXO-o4UcocWh_A&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
+        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpe9Km1DH-POEKU9qmitzA-IMnU93HuqMAbiL7NXaaeMXbDd0La8t1NrrGVHiaZUsu2gDPNQKEFyiXp7savEr9uv2-y93owYtmBrrCf5wQbLQ0ONSQUZ8MdoPO1JSsfbAqn1lj14Lxh7FmXYtnuTBgohToS-8p9hRW0o2WQX2HSaGSUV6zv6dUw9Kw2dsxPwuF0cptdNU_uOO0-FlGBITlHGjbEA3F1GYTTvCD2d5MwgtZwD1YdwHY2yj4vAEBXu-3HqGkxctJMBfQhV86cm3U7Rcbb1a53oY4Gpui-wczJ6YA&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
+        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpcYeSGamHeOt8I8avM8Gg82u-hKzVAluhptN170SxDkb2xh-JRVKY_q_Y3RmUHD8_a7SWZJqwVlswDraT7IgWku5G-UeO4L2g1t6KorabuEjbxGEzgQZkZzK8rzUBqP9dnwREM2JGcW9LrU9qb4tThihgTzJtQEnWTpLVB8i4YuxkxCGrcjM6shHHumB9wpAx63egf3OMnr6hAcDGVK7V3wb_pi-jxZZXPKVNt4iGWZMt9yLqW3jmzXU4EPmIFve4jqa4RgxtRa5tsehdnO2rLxZUJyD1y9TiXD756kVGypm2PCJ11xpiDLNuKUYdBKhcv1nRq2oJEAE-bXXlO6n1zeu1bO8ProhAQz3IUypA5LCQwvUqalv_MIJqUVh-fk-XRDeBGmCwQXK-Rabq0aU8MY52yzFRJZIg0NiAuarYth6w&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800"
       ]),
       visible_en_directorio: 1,
       lat: 3.9889,

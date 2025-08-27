@@ -1,4 +1,6 @@
-# Yo Compro Acacías - Directorio Comercial Digital
+# Yo Compro Acacías - Directorio de Negocios Locales
+
+**DEPLOY TRIGGER - 2025-08-27 16:26** - Forzando nuevo despliegue Digital
 
 Plataforma oficial de directorio comercial para la Alcaldía de Acacías, Meta - Colombia. Sistema automatizado de sincronización con Google Business Profile para promover el comercio local.
 

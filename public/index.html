@@ -191,8 +191,114 @@
     <section class="categories-section">
         <div class="container">
             <h3>Explora por Categorías</h3>
-            <div class="categories-grid" id="categoriesGrid">
-                <!-- Categories will be loaded dynamically -->
+            <div class="categories-grid">
+                <div class="category-card" onclick="filterByCategory('Restaurante')">
+                    <div class="category-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h4>Restaurantes</h4>
+                    <p>Comida típica llanera y más</p>
+                    <span class="category-count" id="count-restaurante">-</span>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('Panadería')">
+                    <div class="category-icon">
+                        <i class="fas fa-bread-slice"></i>
+                    </div>
+                    <h4>Panaderías</h4>
+                    <p>Pan fresco y repostería</p>
+                    <span class="category-count" id="count-panaderia">-</span>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('Supermercado')">
+                    <div class="category-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h4>Supermercados</h4>
+                    <p>Todo lo que necesitas</p>
+                    <span class="category-count" id="count-supermercado">-</span>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('Farmacia')">
+                    <div class="category-icon">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <h4>Farmacias</h4>
+                    <p>Medicamentos y salud</p>
+                    <span class="category-count" id="count-farmacia">-</span>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('Peluquería')">
+                    <div class="category-icon">
+                        <i class="fas fa-cut"></i>
+                    </div>
+                    <h4>Peluquerías</h4>
+                    <p>Belleza y cuidado personal</p>
+                    <span class="category-count" id="count-peluqueria">-</span>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('Banco')">
+                    <div class="category-icon">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h4>Bancos</h4>
+                    <p>Servicios financieros</p>
+                    <span class="category-count" id="count-banco">-</span>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('Hotel')">
+                    <div class="category-icon">
+                        <i class="fas fa-bed"></i>
+                    </div>
+                    <h4>Hoteles</h4>
+                    <p>Hospedaje y turismo</p>
+                    <span class="category-count" id="count-hotel">-</span>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('Ferretería')">
+                    <div class="category-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h4>Ferreterías</h4>
+                    <p>Herramientas y construcción</p>
+                    <span class="category-count" id="count-ferreteria">-</span>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('Automotriz')">
+                    <div class="category-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <h4>Automotriz</h4>
+                    <p>Talleres y repuestos</p>
+                    <span class="category-count" id="count-automotriz">-</span>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('Salud')">
+                    <div class="category-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h4>Salud</h4>
+                    <p>Consultorios y clínicas</p>
+                    <span class="category-count" id="count-salud">-</span>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('Tienda')">
+                    <div class="category-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <h4>Tiendas</h4>
+                    <p>Variedad y conveniencia</p>
+                    <span class="category-count" id="count-tienda">-</span>
+                </div>
+
+                <div class="category-card" onclick="filterByCategory('Tecnología')">
+                    <div class="category-icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h4>Tecnología</h4>
+                    <p>Computadores y celulares</p>
+                    <span class="category-count" id="count-tecnologia">-</span>
+                </div>
             </div>
         </div>
     </section>

@@ -109,6 +109,7 @@ async function loadBusinesses() {
         renderPage(1);
         setupPagination();
         updateCounter();
+        updateCategoryCounters();
         
         // Ocultar indicador de carga
         const loadingSpinner = document.getElementById('loadingSpinner');
@@ -378,6 +379,108 @@ function updateCounter() {
         const endIndex = Math.min(currentPage * businessesPerPage, allBusinesses.length);
         counterElement.textContent = `Mostrando ${startIndex}-${endIndex} de ${allBusinesses.length} negocios`;
     }
+}
+
+// Función para filtrar por categoría
+function filterByCategory(category) {
+    console.log(`🔍 Filtrando por categoría: ${category}`);
+    
+    const filteredBusinesses = allBusinesses.filter(business => {
+        return business.categoria === category || 
+               business.categoria_principal === category ||
+               (business.categoria && business.categoria.toLowerCase().includes(category.toLowerCase()));
+    });
+    
+    console.log(`📊 Encontrados ${filteredBusinesses.length} negocios en categoría ${category}`);
+    
+    // Mostrar resultados filtrados
+    displayFilteredResults(filteredBusinesses, category);
+    
+    // Scroll a los resultados
+    const resultsSection = document.getElementById('searchResults') || document.getElementById('allBusinessesSection');
+    if (resultsSection) {
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Función para mostrar resultados filtrados
+function displayFilteredResults(businesses, category) {
+    const container = document.getElementById('allBusinessesGrid');
+    const searchResults = document.getElementById('searchResults');
+    const searchTitle = document.getElementById('searchTitle');
+    
+    if (searchResults && searchTitle) {
+        searchResults.style.display = 'block';
+        searchTitle.textContent = `${businesses.length} negocios en "${category}"`;
+        
+        // Usar el contenedor de resultados de búsqueda si existe
+        const searchGrid = document.getElementById('businessesGrid');
+        if (searchGrid) {
+            renderBusinesses(businesses, searchGrid);
+            return;
+        }
+    }
+    
+    // Fallback al contenedor principal
+    if (container) {
+        container.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; margin-bottom: 2rem;">
+                <h3 style="color: #3b82f6; margin-bottom: 0.5rem;">📂 ${category}</h3>
+                <p style="color: #666; margin-bottom: 1rem;">${businesses.length} negocios encontrados</p>
+                <button onclick="showAllBusinesses()" style="background: #f3f4f6; border: 1px solid #d1d5db; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+                    ← Mostrar todos los negocios
+                </button>
+            </div>
+        `;
+        
+        renderBusinesses(businesses, container, false);
+    }
+}
+
+// Función para mostrar todos los negocios
+function showAllBusinesses() {
+    console.log('🔄 Mostrando todos los negocios');
+    currentPage = 1;
+    renderPage(1);
+    
+    // Ocultar resultados de búsqueda si existen
+    const searchResults = document.getElementById('searchResults');
+    if (searchResults) {
+        searchResults.style.display = 'none';
+    }
+}
+
+// Función para actualizar contadores de categorías
+function updateCategoryCounters() {
+    const categories = {
+        'Restaurante': ['Restaurante', 'Restaurant', 'Comida'],
+        'Panadería': ['Panadería', 'Bakery', 'Pan'],
+        'Supermercado': ['Supermercado', 'Supermarket', 'Mercado'],
+        'Farmacia': ['Farmacia', 'Pharmacy', 'Droguería'],
+        'Peluquería': ['Peluquería', 'Belleza', 'Beauty', 'Salon'],
+        'Banco': ['Banco', 'Bank', 'Financiero'],
+        'Hotel': ['Hotel', 'Hospedaje', 'Lodging'],
+        'Ferretería': ['Ferretería', 'Hardware', 'Construcción'],
+        'Automotriz': ['Automotriz', 'Taller', 'Repuestos', 'Car'],
+        'Salud': ['Salud', 'Clínica', 'Consultorio', 'Health'],
+        'Tienda': ['Tienda', 'Store', 'Shop'],
+        'Tecnología': ['Tecnología', 'Computador', 'Celular', 'Tech']
+    };
+    
+    Object.keys(categories).forEach(mainCategory => {
+        const variations = categories[mainCategory];
+        const count = allBusinesses.filter(business => {
+            const businessCategory = business.categoria || business.categoria_principal || '';
+            return variations.some(variation => 
+                businessCategory.toLowerCase().includes(variation.toLowerCase())
+            );
+        }).length;
+        
+        const countElement = document.getElementById(`count-${mainCategory.toLowerCase().replace('í', 'i').replace('é', 'e')}`);
+        if (countElement) {
+            countElement.textContent = count > 0 ? `${count} negocios` : 'Próximamente';
+        }
+    });
 }
 
 // Funciones de búsqueda

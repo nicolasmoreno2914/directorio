@@ -78,23 +78,23 @@ function getFallbackBusinesses() {
   return [
     {
       id: 1,
-      nombre_negocio: "Restaurante El Sabor Llanero",
+      nombre_negocio: "Fábrica de arepas el buen sabor llanero",
       categoria: "Restaurante",
-      direccion: "Calle 15 #12-34, Centro, Acacías",
+      direccion: "Cra. 18 #N° 17-45, Acacías, Meta",
       telefono: "+57 8 123-4567",
       website: "",
-      horarios: "Lunes a Domingo: 11:00 AM - 9:00 PM",
-      calificacion: 4.5,
-      // IMÁGENES REALES DE GOOGLE MY BUSINESS - Limón Mandarino Restaurante (URLs válidas)
+      horarios: "Lunes a Domingo: 6:00 AM - 8:00 PM",
+      calificacion: 5.0,
+      // IMÁGENES REALES DE GOOGLE MY BUSINESS - Fábrica de arepas el buen sabor llanero (URLs válidas)
       imagenes: JSON.stringify([
-        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpdyUbaWb7ckj9CmXQ0lHmMhtn4mEPENA1s_lNvlmhHqrsGggfUUruH03lgU_F0iu-DDNFJu8dJ9VWMKgQrCKcyPDxyb1t8pVF5TCkkV2_wWnflsTgolmH-wzTyrJK9UlGbz6V1Dce0jafn175meCsX3IEUOapV3tdfvd_-sHyz8KmGSuhOKzFKx82V5tkM-Le2pLdD4RdHY-og2-qYllRUIYr22ieIIVcQ0izJ8EANg9OCLN5cSr6eF1XRkPxP_3nqzhn0ICGDZmDblFMZLWg06z5Rag5YscXO-o4UcocWh_A&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
-        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpe9Km1DH-POEKU9qmitzA-IMnU93HuqMAbiL7NXaaeMXbDd0La8t1NrrGVHiaZUsu2gDPNQKEFyiXp7savEr9uv2-y93owYtmBrrCf5wQbLQ0ONSQUZ8MdoPO1JSsfbAqn1lj14Lxh7FmXYtnuTBgohToS-8p9hRW0o2WQX2HSaGSUV6zv6dUw9Kw2dsxPwuF0cptdNU_uOO0-FlGBITlHGjbEA3F1GYTTvCD2d5MwgtZwD1YdwHY2yj4vAEBXu-3HqGkxctJMBfQhV86cm3U7Rcbb1a53oY4Gpui-wczJ6YA&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
-        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpcYeSGamHeOt8I8avM8Gg82u-hKzVAluhptN170SxDkb2xh-JRVKY_q_Y3RmUHD8_a7SWZJqwVlswDraT7IgWku5G-UeO4L2g1t6KorabuEjbxGEzgQZkZzK8rzUBqP9dnwREM2JGcW9LrU9qb4tThihgTzJtQEnWTpLVB8i4YuxkxCGrcjM6shHHumB9wpAx63egf3OMnr6hAcDGVK7V3wb_pi-jxZZXPKVNt4iGWZMt9yLqW3jmzXU4EPmIFve4jqa4RgxtRa5tsehdnO2rLxZUJyD1y9TiXD756kVGypm2PCJ11xpiDLNuKUYdBKhcv1nRq2oJEAE-bXXlO6n1zeu1bO8ProhAQz3IUypA5LCQwvUqalv_MIJqUVh-fk-XRDeBGmCwQXK-Rabq0aU8MY52yzFRJZIg0NiAuarYth6w&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800"
+        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpeo5PSqPMOjFRKidta9lXKbaXgkTNev6ZUsOHT5gxx-xbBhx2wPntodE7KyJlUdwF-eYaMzMaWWXiTXx1sIeA8UUZlkLPMi_pP4I7QVLmU-x8Hyo-t4QGipr_AzmWyWxnUNi_6ll9ASLphrzQoosIrdPDJM9e5DsHrgtuFz2YuQelgGzJmhSAIMJuhhxlSnJNA9uvsX2wxvwiMeaEmpNL15jlzuJBqb76ha7BGAqLFqxQTyumU4ijNoNDdt5kxI0zIfwXtf-oj-xTAc0pYdv6dbctZCmWr7Z5yHOKlfq-zJPg&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
+        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpf-iywcpBL-RvS6Wu5B-2ZKAF0LCfciL29LVon_8Mi-ibvpJtkPXY0nIPBihRBvbmXxKFQL18PSXskhcZ4S-CSH0-npaFvdB5LN8_or3tXbDR20HosI_Veupg1slqDCwb_l7XOY1efJ45EZw7d4MrjnFGxC0A8pZl3CJ99N-IM-gz4uEgTn7aXilqryM-pHFQQQu1exm9XzuSnAdKtlCAlUW4Mx6k00AxFsO5nmzKooyjwyD_ya95XDvKO-ARmtw2emXF_25EaWMR01qilrtfRrQwlVQoRgBHVwIG1PFeSvRDly1g0CED2bwviyL-sX9iUTIQNOFQerS9fSUDRfa7aHQYSr4C8gUtYdOx6jJnm4HuzHlpuTumAZjYXND6HOy6ySVZNK0xQG9NbI6_HLQJDhqVTPmW6I6RZNhSipCRpIz1RF&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
+        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpd65RJTxlN5hOjP5IksEK3L1MDdUefU1AkdsVceseYmbqFxv7-Oq0aJa9H3XcFNViSto419DnDiy_T40dTK1VcRyGyZWc0vEX7pfyFEY1PNt539fuks_wVnAwVemWBsr25AYrwQSVscUzSFtInJNGiOtgnyzmblSJSSSfiYnocMCXyDrbkJmEoZZvNJkHBQfpxzAQvY2h8CiqiNE-VhjqsGmvJS7mDnawXn2llw7D-uevJxTmMO_FKmxYRFuIvV8BrchinYDCADYjNSnrTZdiN21Y10Y_ko6tpMutN2Wm83vk3ifQULE6fL18j21CfAqR1DLVllUqJ1GnXsH2ZAKwNEmbt2ChxJpAUHryvK1I_E4YTMbfd8JHsduaoFO-GULC3L_UI7MpNnGn9S3wC6qcd2J9cmjgLn6obAXd-ucHc0zU_6&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800"
       ]),
       visible_en_directorio: 1,
       lat: 3.9889,
       lon: -73.7561,
-      descripcion: "Comida típica llanera - Especialidad en carne a la llanera",
+      descripcion: "Fábrica de arepas tradicionales llaneras - Especialidad en arepas rellenas",
       google_place_id: "ChIJtest123456789",
       tiene_imagenes_reales: true,
       fuente_datos: "test_real_images"

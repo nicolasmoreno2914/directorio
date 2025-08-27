@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negocio - Yo Compro Acacías</title>
+    <link rel="stylesheet" href="/css/business.css?v=2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i>
+                <span>NEGOCIO VERIFICADO EN ACACÍAS</span>
+            </div>
+            <h1 id="heroTitle">Cargando negocio...</h1>
+            <p id="heroSubtitle">Obteniendo información del negocio...</p>
+            <div class="hero-rating">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <span id="businessRating">5.0</span>
+                <span class="rating-text">• Calificación promedio</span>
+            </div>
+            <button id="mainActionBtn" class="cta-button">
+                <i class="fas fa-phone"></i>
+                LLAMAR AHORA
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="main-content" style="display: none;">
+        <!-- Business Gallery -->
+        <section id="businessGallery" class="business-gallery">
+            <div class="container">
+                <h2>Galería de Imágenes</h2>
+                <div class="carousel-container">
+                    <div id="carouselTrack" class="carousel-track">
+                        <!-- Images will be loaded here -->
+                    </div>
+                    <button id="prevBtn" class="carousel-btn prev-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button id="nextBtn" class="carousel-btn next-btn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="carousel-indicators" id="carouselIndicators">
+                    <!-- Los indicadores se generarán dinámicamente -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Choose Section -->
+        <section class="why-choose">
+            <div class="container">
+                <h2>¿Por qué elegir <span id="businessNameTitle">ESTE NEGOCIO</span>?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h3>Ubicación Estratégica</h3>
+                        <p id="businessAddressDetail">Ubicado en el corazón de Acacías, Meta</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3>Excelente Calificación</h3>
+                        <p>Calificación de <span id="businessRating">5.0</span> estrellas basada en reseñas reales</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>Compromiso Local</h3>
+                        <p>Negocio comprometido con la comunidad de Acacías</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Business Info Section -->
+        <section class="business-info">
+            <div class="container">
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>Acerca del Negocio</h3>
+                        <p id="businessDescription">Información del negocio cargando...</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Información de Contacto</h3>
+                        <div class="contact-details">
+                            <div id="phoneSection" class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <span id="businessPhone">Teléfono no disponible</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span id="businessAddress">Dirección no disponible</span>
+                            </div>
+                            <div id="websiteSection" class="contact-item" style="display: none;">
+                                <i class="fas fa-globe"></i>
+                                <a id="businessWebsite" href="#" target="_blank">Visitar sitio web</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <h3>Horarios de Atención</h3>
+                        <div id="businessHours">
+                            <p>Horarios no disponibles</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons Section -->
+        <section class="action-section">
+            <div class="container">
+                <div class="action-buttons">
+                    <button id="callBtn" class="action-btn primary">
+                        <i class="fas fa-phone"></i>
+                        Llamar
+                    </button>
+                    <button id="directionsBtn" class="action-btn">
+                        <i class="fas fa-directions"></i>
+                        Direcciones
+                    </button>
+                    <button id="websiteBtn" class="action-btn" style="display: none;">
+                        <i class="fas fa-globe"></i>
+                        Sitio Web
+                    </button>
+                    <button id="shareBtn" class="action-btn" onclick="openShareModal()">
+                        <i class="fas fa-share-alt"></i>
+                        Compartir
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Back to Directory -->
+        <section class="back-section">
+            <div class="container">
+                <a href="/" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Volver al Directorio
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="loading-state">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>Cargando información del negocio</h2>
+            <p>Obteniendo datos del negocio...</p>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="error-state" style="display: none;">
+        <div class="error-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Negocio no encontrado</h2>
+            <p>Error cargando la información del negocio</p>
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i>
+                Volver al directorio
+            </a>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Compartir Negocio</h3>
+                <button class="close-btn" onclick="closeShareModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="share-options">
+                    <button onclick="shareWhatsApp()">
+                        <i class="fab fa-whatsapp"></i>
+                        WhatsApp
+                    </button>
+                    <button onclick="shareFacebook()">
+                        <i class="fab fa-facebook"></i>
+                        Facebook
+                    </button>
+                    <button onclick="shareTwitter()">
+                        <i class="fab fa-twitter"></i>
+                        Twitter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Datos embebidos directamente - SOLUCIÓN INMEDIATA
+    const businessesData = [
+        {
+            id: 1,
+            nombre_negocio: "Fábrica de arepas el buen sabor llanero",
+            categoria: "Restaurante",
+            direccion: "Cra. 18 #N° 17-45, Acacías, Meta",
+            telefono: "311 8117545",
+            website: "",
+            horarios: "Lunes a Domingo: 6:00 AM - 8:00 PM",
+            calificacion: 5.0,
+            imagenes: [
+                "https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg",
+                "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg",
+                "https://images.pexels.com/photos/1633525/pexels-photo-1633525.jpeg"
+            ],
+            descripcion: "Deliciosas arepas tradicionales llaneras hechas con ingredientes frescos y auténticos sabores de la región."
+        },
+        {
+            id: 2,
+            nombre_negocio: "Restaurante El Sabor Llanero",
+            categoria: "Restaurante",
+            direccion: "Calle 15 #12-34, Acacías, Meta",
+            telefono: "320 4567890",
+            website: "",
+            horarios: "Lunes a Domingo: 11:00 AM - 10:00 PM",
+            calificacion: 4.5,
+            imagenes: [
+                "https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg",
+                "https://images.pexels.com/photos/1307698/pexels-photo-1307698.jpeg",
+                "https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg"
+            ],
+            descripcion: "Auténtica comida llanera con los mejores cortes de carne y platos tradicionales de la región."
+        },
+        {
+            id: 3,
+            nombre_negocio: "Asadero El Corral",
+            categoria: "Restaurante",
+            direccion: "Carrera 14 #18-25, Acacías, Meta",
+            telefono: "320 1234567",
+            website: "",
+            horarios: "Lunes a Domingo: 12:00 PM - 10:00 PM",
+            calificacion: 4.2,
+            imagenes: [
+                "https://images.pexels.com/photos/776538/pexels-photo-776538.jpeg",
+                "https://images.pexels.com/photos/1639562/pexels-photo-1639562.jpeg",
+                "https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg"
+            ],
+            descripcion: "Especialistas en carnes asadas y parrillas con ambiente familiar y excelente atención."
+        },
+        {
+            id: 4,
+            nombre_negocio: "Pizzería Domino's",
+            categoria: "Pizzería",
+            direccion: "Calle 15 #14-20, Acacías, Meta",
+            telefono: "314 5678901",
+            website: "https://www.dominos.com.co",
+            horarios: "Lunes a Domingo: 11:00 AM - 11:00 PM",
+            calificacion: 4.0,
+            imagenes: [
+                "https://images.pexels.com/photos/315755/pexels-photo-315755.jpeg",
+                "https://images.pexels.com/photos/365459/pexels-photo-365459.jpeg",
+                "https://images.pexels.com/photos/708587/pexels-photo-708587.jpeg"
+            ],
+            descripcion: "Las mejores pizzas con ingredientes frescos y entrega rápida a domicilio."
+        },
+        {
+            id: 5,
+            nombre_negocio: "Amasijos La Espiga Llanera",
+            categoria: "Panadería",
+            direccion: "Cl. 14 # 47 - 12, Acacías, Meta",
+            telefono: "318 3600291",
+            website: "",
+            horarios: "Lunes a Domingo: 6:00 AM - 7:30 PM",
+            calificacion: 4.7,
+            imagenes: [
+                "https://images.pexels.com/photos/209206/pexels-photo-209206.jpeg",
+                "https://images.pexels.com/photos/1775043/pexels-photo-1775043.jpeg",
+                "https://images.pexels.com/photos/1775037/pexels-photo-1775037.jpeg"
+            ],
+            descripcion: "Panadería artesanal con productos frescos horneados diariamente y especialidades llaneras."
+        },
+        {
+            id: 6,
+            nombre_negocio: "Villa Olímpica",
+            categoria: "Gimnasio",
+            direccion: "Cra. 14 # 18 18, Acacías, Meta",
+            telefono: "",
+            website: "",
+            horarios: "Abierto 24 horas",
+            calificacion: 4.1,
+            imagenes: [
+                "https://images.pexels.com/photos/1552252/pexels-photo-1552252.jpeg",
+                "https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg",
+                "https://images.pexels.com/photos/1552249/pexels-photo-1552249.jpeg"
+            ],
+            descripcion: "Gimnasio moderno con equipos de última generación y entrenadores profesionales."
+        },
+        {
+            id: 7,
+            nombre_negocio: "Los Capachos",
+            categoria: "Hotel",
+            direccion: "Vía Villavicencio - Acacías #472 Km 4, Villavicencio, Meta",
+            telefono: "317 5653669",
+            website: "http://www.loscapachos.com/",
+            horarios: "Jueves a Sábado: 9:00 PM - 5:00 AM",
+            calificacion: 4.6,
+            imagenes: [
+                "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg",
+                "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg",
+                "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg"
+            ],
+            descripcion: "Establecimiento amplio con club de baile vibrante, bar y jardín, además de cócteles y comida global."
+        }
+    ];
+
+    // Función principal
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Iniciando landing page instantánea');
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const businessId = parseInt(urlParams.get('id'));
+        
+        if (!businessId) {
+            showError('ID de negocio no válido');
+            return;
+        }
+        
+        const business = businessesData.find(b => b.id === businessId);
+        
+        if (!business) {
+            showError('Negocio no encontrado');
+            return;
+        }
+        
+        console.log(`✅ Negocio encontrado: ${business.nombre_negocio}`);
+        renderBusiness(business);
+    });
+    
+    function renderBusiness(business) {
+        // Actualizar título de página
+        document.title = `${business.nombre_negocio} - Yo Compro Acacías`;
+        
+        // Actualizar hero section
+        document.getElementById('heroTitle').textContent = business.nombre_negocio;
+        document.getElementById('heroSubtitle').textContent = `Descubre este increíble ${business.categoria.toLowerCase()} en Acacías, Meta`;
+        
+        // Actualizar rating
+        const ratingElements = document.querySelectorAll('#businessRating');
+        ratingElements.forEach(element => {
+            element.textContent = business.calificacion.toFixed(1);
+        });
+        
+        // Actualizar nombre en sección why
+        document.getElementById('businessNameTitle').textContent = business.nombre_negocio.toUpperCase();
+        
+        // Actualizar dirección
+        document.getElementById('businessAddress').textContent = business.direccion;
+        document.getElementById('businessAddressDetail').textContent = business.direccion;
+        
+        // Actualizar descripción
+        document.getElementById('businessDescription').textContent = business.descripcion;
+        
+        // Actualizar teléfono
+        const phoneSection = document.getElementById('phoneSection');
+        if (business.telefono) {
+            document.getElementById('businessPhone').textContent = business.telefono;
+            phoneSection.style.display = 'flex';
+        } else {
+            phoneSection.style.display = 'none';
+        }
+        
+        // Actualizar website
+        const websiteSection = document.getElementById('websiteSection');
+        const websiteBtn = document.getElementById('websiteBtn');
+        if (business.website) {
+            document.getElementById('businessWebsite').href = business.website;
+            websiteSection.style.display = 'flex';
+            websiteBtn.style.display = 'block';
+        } else {
+            websiteSection.style.display = 'none';
+            websiteBtn.style.display = 'none';
+        }
+        
+        // Actualizar horarios
+        document.getElementById('businessHours').innerHTML = `<p>${business.horarios}</p>`;
+        
+        // Renderizar imágenes
+        renderImages(business);
+        
+        // Configurar botones
+        setupButtons(business);
+        
+        // Mostrar contenido
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+        
+        console.log('✅ Renderizado completado');
+    }
+    
+    function renderImages(business) {
+        const carouselTrack = document.getElementById('carouselTrack');
+        let boxesHTML = '';
+        
+        for (let i = 0; i < 3; i++) {
+            const image = business.imagenes[i];
+            
+            if (image) {
+                boxesHTML += `
+                    <div class="image-box" onclick="window.open('${image}', '_blank')">
+                        <img src="${image}" 
+                             alt="Imagen de ${business.nombre_negocio}" 
+                             class="box-image" 
+                             loading="lazy">
+                        <div class="image-number">${i + 1}</div>
+                    </div>
+                `;
+            } else {
+                boxesHTML += `
+                    <div class="image-box empty">
+                        <div class="placeholder-content">
+                            <div class="placeholder-icon">🏪</div>
+                            <div class="placeholder-text">Sin imagen</div>
+                        </div>
+                        <div class="image-number">${i + 1}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        carouselTrack.innerHTML = boxesHTML;
+        carouselTrack.className = 'image-grid';
+        
+        // Ocultar controles de navegación
+        document.getElementById('carouselIndicators').style.display = 'none';
+        document.getElementById('prevBtn').style.display = 'none';
+        document.getElementById('nextBtn').style.display = 'none';
+    }
+    
+    function setupButtons(business) {
+        // Botón principal
+        const mainActionBtn = document.getElementById('mainActionBtn');
+        if (business.telefono) {
+            mainActionBtn.innerHTML = '<i class="fas fa-phone"></i> LLAMAR AHORA';
+            mainActionBtn.onclick = () => window.location.href = `tel:${business.telefono}`;
+        } else if (business.website) {
+            mainActionBtn.innerHTML = '<i class="fas fa-globe"></i> VISITAR SITIO';
+            mainActionBtn.onclick = () => window.open(business.website, '_blank');
+        } else {
+            mainActionBtn.innerHTML = '<i class="fas fa-map-marker-alt"></i> VER UBICACIÓN';
+            mainActionBtn.onclick = () => openDirections(business.direccion);
+        }
+        
+        // Botón de llamada
+        const callBtn = document.getElementById('callBtn');
+        if (business.telefono) {
+            callBtn.onclick = () => window.location.href = `tel:${business.telefono}`;
+        } else {
+            callBtn.style.display = 'none';
+        }
+        
+        // Botón de website
+        const websiteBtn = document.getElementById('websiteBtn');
+        if (business.website) {
+            websiteBtn.onclick = () => window.open(business.website, '_blank');
+        }
+        
+        // Botón de direcciones
+        document.getElementById('directionsBtn').onclick = () => openDirections(business.direccion);
+    }
+    
+    function openDirections(address) {
+        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+        window.open(url, '_blank');
+    }
+    
+    function showError(message) {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('errorState').style.display = 'flex';
+        document.querySelector('.error-content p').textContent = message;
+    }
+    
+    function openShareModal() {
+        document.getElementById('shareModal').style.display = 'flex';
+    }
+    
+    function closeShareModal() {
+        document.getElementById('shareModal').style.display = 'none';
+    }
+    
+    function shareWhatsApp() {
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent('¡Mira este negocio en Yo Compro Acacías!');
+        window.open(`https://wa.me/?text=${text} ${url}`, '_blank');
+    }
+    
+    function shareFacebook() {
+        const url = encodeURIComponent(window.location.href);
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+    }
+    
+    function shareTwitter() {
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent('¡Mira este negocio en Yo Compro Acacías!');
+        window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Fábrica de arepas el buen sabor llanero - Yo Compro Acacías</title>
+    <link rel="stylesheet" href="/css/business.css?v=2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        // Get business ID from URL and update content
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const businessId = parseInt(urlParams.get('id')) || 1;
+            
+            const businesses = {
+                1: {
+                    nombre_negocio: "Fábrica de arepas el buen sabor llanero",
+                    categoria: "Restaurante",
+                    direccion: "Cra. 18 #N° 17-45, Acacías, Meta",
+                    telefono: "311 8117545",
+                    horarios: "Lunes a Domingo: 6:00 AM - 8:00 PM",
+                    calificacion: 5.0,
+                    descripcion: "Fábrica de arepas tradicionales llaneras - Especialidad en arepas rellenas",
+                    imagenes: [
+                        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpeo5PSqPMOjFRKidta9lXKbaXgkTNev6ZUsOHT5gxx-xbBhx2wPntodE7KyJlUdwF-eYaMzMaWWXiTXx1sIeA8UUZlkLPMi_pP4I7QVLmU-x8Hyo-t4QGipr_AzmWyWxnUNi_6ll9ASLphrzQoosIrdPDJM9e5DsHrgtuFz2YuQelgGzJmhSAIMJuhhxlSnJNA9uvsX2wxvwiMeaEmpNL15jlzuJBqb76ha7BGAqLFqxQTyumU4ijNoNDdt5kxI0zIfwXtf-oj-xTAc0pYdv6dbctZCmWr7Z5yHOKlfq-zJPg&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
+                        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpf-iywcpBL-RvS6Wu5B-2ZKAF0LCfciL29LVon_8Mi-ibvpJtkPXY0nIPBihRBvbmXxKFQL18PSXskhcZ4S-CSH0-npaFvdB5LN8_or3tXbDR20HosI_Veupg1slqDCwb_l7XOY1efJ45EZw7d4MrjnFGxC0A8pZl3CJ99N-IM-gz4uEgTn7aXilqryM-pHFQQQu1exm9XzuSnAdKtlCAlUW4Mx6k00AxFsO5nmzKooyjwyD_ya95XDvKO-ARmtw2emXF_25EaWMR01qilrtfRrQwlVQoRgBHVwIG1PFeSvRDly1g0CED2bwviyL-sX9iUTIQNOFQerS9fSUDRfa7aHQYSr4C8gUtYdOx6jJnm4HuzHlpuTumAZjYXND6HOy6ySVZNK0xQG9NbI6_HLQJDhqVTPmW6I6RZNhSipCRpIz1RF&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
+                        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpd65RJTxlN5hOjP5IksEK3L1MDdUefU1AkdsVceseYmbqFxv7-Oq0aJa9H3XcFNViSto419DnDiy_T40dTK1VcRyGyZWc0vEX7pfyFEY1PNt539fuks_wVnAwVemWBsr25AYrwQSVscUzSFtInJNGiOtgnyzmblSJSSSfiYnocMCXyDrbkJmEoZZvNJkHBQfpxzAQvY2h8CiqiNE-VhjqsGmvJS7mDnawXn2llw7D-uevJxTmMO_FKmxYRFuIvV8BrchinYDCADYjNSnrTZdiN21Y10Y_ko6tpMutN2Wm83vk3ifQULE6fL18j21CfAqR1DLVllUqJ1GnXsH2ZAKwNEmbt2ChxJpAUHryvK1I_E4YTMbfd8JHsduaoFO-GULC3L_UI7MpNnGn9S3wC6qcd2J9cmjgLn6obAXd-ucHc0zU_6&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800"
+                    ]
+                },
+                2: {
+                    nombre_negocio: "Restaurante El Sabor Llanero",
+                    categoria: "Restaurante",
+                    direccion: "Calle 15 #12-34, Acacías, Meta",
+                    telefono: "320 4567890",
+                    horarios: "Lunes a Domingo: 11:00 AM - 10:00 PM",
+                    calificacion: 4.5,
+                    descripcion: "Restaurante especializado en comida llanera tradicional",
+                    imagenes: [
+                        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpeo5PSqPMOjFRKidta9lXKbaXgkTNev6ZUsOHT5gxx-xbBhx2wPntodE7KyJlUdwF-eYaMzMaWWXiTXx1sIeA8UUZlkLPMi_pP4I7QVLmU-x8Hyo-t4QGipr_AzmWyWxnUNi_6ll9ASLphrzQoosIrdPDJM9e5DsHrgtuFz2YuQelgGzJmhSAIMJuhhxlSnJNA9uvsX2wxvwiMeaEmpNL15jlzuJBqb76ha7BGAqLFqxQTyumU4ijNoNDdt5kxI0zIfwXtf-oj-xTAc0pYdv6dbctZCmWr7Z5yHOKlfq-zJPg&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800",
+                        "https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpf-iywcpBL-RvS6Wu5B-2ZKAF0LCfciL29LVon_8Mi-ibvpJtkPXY0nIPBihRBvbmXxKFQL18PSXskhcZ4S-CSH0-npaFvdB5LN8_or3tXbDR20HosI_Veupg1slqDCwb_l7XOY1efJ45EZw7d4MrjnFGxC0A8pZl3CJ99N-IM-gz4uEgTn7aXilqryM-pHFQQQu1exm9XzuSnAdKtlCAlUW4Mx6k00AxFsO5nmzKooyjwyD_ya95XDvKO-ARmtw2emXF_25EaWMR01qilrtfRrQwlVQoRgBHVwIG1PFeSvRDly1g0CED2bwviyL-sX9iUTIQNOFQerS9fSUDRfa7aHQYSr4C8gUtYdOx6jJnm4HuzHlpuTumAZjYXND6HOy6ySVZNK0xQG9NbI6_HLQJDhqVTPmW6I6RZNhSipCRpIz1RF&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800"
+                    ]
+                }
+            };
+            
+            const business = businesses[businessId] || businesses[1];
+            
+            // Update title
+            document.title = business.nombre_negocio + " - Yo Compro Acacías";
+            document.getElementById('pageTitle').textContent = document.title;
+            
+            // Update all business name elements
+            document.querySelectorAll('.business-name').forEach(el => {
+                el.textContent = business.nombre_negocio;
+            });
+            
+            // Update all business address elements
+            document.querySelectorAll('.business-address').forEach(el => {
+                el.textContent = business.direccion;
+            });
+            
+            // Update all business phone elements
+            document.querySelectorAll('.business-phone').forEach(el => {
+                el.textContent = business.telefono;
+                el.href = 'tel:' + business.telefono;
+            });
+            
+            // Update all business hours elements
+            document.querySelectorAll('.business-hours').forEach(el => {
+                el.textContent = business.horarios;
+            });
+            
+            // Update all business rating elements
+            document.querySelectorAll('.business-rating').forEach(el => {
+                el.textContent = business.calificacion.toFixed(1);
+            });
+            
+            // Update all business description elements
+            document.querySelectorAll('.business-description').forEach(el => {
+                el.textContent = business.descripcion;
+            });
+            
+            // Update images
+            const imageContainer = document.getElementById('imageContainer');
+            if (imageContainer && business.imagenes.length > 0) {
+                let imagesHTML = '';
+                for (let i = 0; i < Math.min(3, business.imagenes.length); i++) {
+                    imagesHTML += `
+                        <div class="image-box" onclick="window.open('${business.imagenes[i]}', '_blank')">
+                            <img src="${business.imagenes[i]}" 
+                                 alt="Imagen de ${business.nombre_negocio}" 
+                                 class="box-image" 
+                                 loading="lazy"
+                                 onerror="this.parentElement.classList.add('error');">
+                            <div class="image-number">${i + 1}</div>
+                        </div>
+                    `;
+                }
+                imageContainer.innerHTML = imagesHTML;
+            }
+            
+            // Setup action buttons
+            document.querySelectorAll('.call-button').forEach(btn => {
+                btn.onclick = () => window.location.href = 'tel:' + business.telefono;
+            });
+            
+            document.querySelectorAll('.directions-button').forEach(btn => {
+                btn.onclick = () => {
+                    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(business.direccion)}`;
+                    window.open(url, '_blank');
+                };
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i>
+                <span>NEGOCIO VERIFICADO EN ACACÍAS</span>
+            </div>
+            <h1 class="hero-title business-name">Fábrica de arepas el buen sabor llanero</h1>
+            <p class="hero-subtitle">Descubre este increíble restaurante en Acacías, Meta</p>
+            <div class="hero-rating">
+                <div class="stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <span class="rating-number business-rating">5.0</span>
+                <span class="rating-text">• Excelente calificación</span>
+            </div>
+            <button class="hero-cta call-button">
+                <i class="fas fa-phone"></i>
+                LLAMAR AHORA
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Business Info Section -->
+        <section class="business-info">
+            <div class="info-header">
+                <h2 class="business-name">Fábrica de arepas el buen sabor llanero</h2>
+                <div class="business-meta">
+                    <span class="category">Restaurante</span>
+                    <span class="verified">
+                        <i class="fas fa-check-circle"></i>
+                        Verificado
+                    </span>
+                </div>
+            </div>
+            
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>Dirección</h3>
+                        <p class="business-address">Cra. 18 #N° 17-45, Acacías, Meta</p>
+                        <button class="info-action directions-button">
+                            <i class="fas fa-directions"></i>
+                            Cómo llegar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>Teléfono</h3>
+                        <p><a href="tel:3118117545" class="business-phone">311 8117545</a></p>
+                        <button class="info-action call-button">
+                            <i class="fas fa-phone"></i>
+                            Llamar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>Horarios</h3>
+                        <p class="business-hours">Lunes a Domingo: 6:00 AM - 8:00 PM</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>Calificación</h3>
+                        <div class="rating-display">
+                            <span class="rating-number business-rating">5.0</span>
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Description Section -->
+        <section class="business-description-section">
+            <h2>Acerca de este negocio</h2>
+            <p class="business-description">Fábrica de arepas tradicionales llaneras - Especialidad en arepas rellenas</p>
+        </section>
+
+        <!-- Gallery Section -->
+        <section class="business-gallery">
+            <h2>Galería de fotos</h2>
+            <div class="image-grid" id="imageContainer">
+                <div class="image-box" onclick="window.open('https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpeo5PSqPMOjFRKidta9lXKbaXgkTNev6ZUsOHT5gxx-xbBhx2wPntodE7KyJlUdwF-eYaMzMaWWXiTXx1sIeA8UUZlkLPMi_pP4I7QVLmU-x8Hyo-t4QGipr_AzmWyWxnUNi_6ll9ASLphrzQoosIrdPDJM9e5DsHrgtuFz2YuQelgGzJmhSAIMJuhhxlSnJNA9uvsX2wxvwiMeaEmpNL15jlzuJBqb76ha7BGAqLFqxQTyumU4ijNoNDdt5kxI0zIfwXtf-oj-xTAc0pYdv6dbctZCmWr7Z5yHOKlfq-zJPg&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800', '_blank')">
+                    <img src="https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpeo5PSqPMOjFRKidta9lXKbaXgkTNev6ZUsOHT5gxx-xbBhx2wPntodE7KyJlUdwF-eYaMzMaWWXiTXx1sIeA8UUZlkLPMi_pP4I7QVLmU-x8Hyo-t4QGipr_AzmWyWxnUNi_6ll9ASLphrzQoosIrdPDJM9e5DsHrgtuFz2YuQelgGzJmhSAIMJuhhxlSnJNA9uvsX2wxvwiMeaEmpNL15jlzuJBqb76ha7BGAqLFqxQTyumU4ijNoNDdt5kxI0zIfwXtf-oj-xTAc0pYdv6dbctZCmWr7Z5yHOKlfq-zJPg&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800" 
+                         alt="Imagen de Fábrica de arepas el buen sabor llanero" 
+                         class="box-image" 
+                         loading="lazy">
+                    <div class="image-number">1</div>
+                </div>
+                <div class="image-box" onclick="window.open('https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpf-iywcpBL-RvS6Wu5B-2ZKAF0LCfciL29LVon_8Mi-ibvpJtkPXY0nIPBihRBvbmXxKFQL18PSXskhcZ4S-CSH0-npaFvdB5LN8_or3tXbDR20HosI_Veupg1slqDCwb_l7XOY1efJ45EZw7d4MrjnFGxC0A8pZl3CJ99N-IM-gz4uEgTn7aXilqryM-pHFQQQu1exm9XzuSnAdKtlCAlUW4Mx6k00AxFsO5nmzKooyjwyD_ya95XDvKO-ARmtw2emXF_25EaWMR01qilrtfRrQwlVQoRgBHVwIG1PFeSvRDly1g0CED2bwviyL-sX9iUTIQNOFQerS9fSUDRfa7aHQYSr4C8gUtYdOx6jJnm4HuzHlpuTumAZjYXND6HOy6ySVZNK0xQG9NbI6_HLQJDhqVTPmW6I6RZNhSipCRpIz1RF&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800', '_blank')">
+                    <img src="https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpf-iywcpBL-RvS6Wu5B-2ZKAF0LCfciL29LVon_8Mi-ibvpJtkPXY0nIPBihRBvbmXxKFQL18PSXskhcZ4S-CSH0-npaFvdB5LN8_or3tXbDR20HosI_Veupg1slqDCwb_l7XOY1efJ45EZw7d4MrjnFGxC0A8pZl3CJ99N-IM-gz4uEgTn7aXilqryM-pHFQQQu1exm9XzuSnAdKtlCAlUW4Mx6k00AxFsO5nmzKooyjwyD_ya95XDvKO-ARmtw2emXF_25EaWMR01qilrtfRrQwlVQoRgBHVwIG1PFeSvRDly1g0CED2bwviyL-sX9iUTIQNOFQerS9fSUDRfa7aHQYSr4C8gUtYdOx6jJnm4HuzHlpuTumAZjYXND6HOy6ySVZNK0xQG9NbI6_HLQJDhqVTPmW6I6RZNhSipCRpIz1RF&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800" 
+                         alt="Imagen de Fábrica de arepas el buen sabor llanero" 
+                         class="box-image" 
+                         loading="lazy">
+                    <div class="image-number">2</div>
+                </div>
+                <div class="image-box" onclick="window.open('https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpd65RJTxlN5hOjP5IksEK3L1MDdUefU1AkdsVceseYmbqFxv7-Oq0aJa9H3XcFNViSto419DnDiy_T40dTK1VcRyGyZWc0vEX7pfyFEY1PNt539fuks_wVnAwVemWBsr25AYrwQSVscUzSFtInJNGiOtgnyzmblSJSSSfiYnocMCXyDrbkJmEoZZvNJkHBQfpxzAQvY2h8CiqiNE-VhjqsGmvJS7mDnawXn2llw7D-uevJxTmMO_FKmxYRFuIvV8BrchinYDCADYjNSnrTZdiN21Y10Y_ko6tpMutN2Wm83vk3ifQULE6fL18j21CfAqR1DLVllUqJ1GnXsH2ZAKwNEmbt2ChxJpAUHryvK1I_E4YTMbfd8JHsduaoFO-GULC3L_UI7MpNnGn9S3wC6qcd2J9cmjgLn6obAXd-ucHc0zU_6&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800', '_blank')">
+                    <img src="https://maps.googleapis.com/maps/api/place/photo?photoreference=ATKogpd65RJTxlN5hOjP5IksEK3L1MDdUefU1AkdsVceseYmbqFxv7-Oq0aJa9H3XcFNViSto419DnDiy_T40dTK1VcRyGyZWc0vEX7pfyFEY1PNt539fuks_wVnAwVemWBsr25AYrwQSVscUzSFtInJNGiOtgnyzmblSJSSSfiYnocMCXyDrbkJmEoZZvNJkHBQfpxzAQvY2h8CiqiNE-VhjqsGmvJS7mDnawXn2llw7D-uevJxTmMO_FKmxYRFuIvV8BrchinYDCADYjNSnrTZdiN21Y10Y_ko6tpMutN2Wm83vk3ifQULE6fL18j21CfAqR1DLVllUqJ1GnXsH2ZAKwNEmbt2ChxJpAUHryvK1I_E4YTMbfd8JHsduaoFO-GULC3L_UI7MpNnGn9S3wC6qcd2J9cmjgLn6obAXd-ucHc0zU_6&key=AIzaSyCyzW8-6DAqGdeLcOZ8-9sFt4yw0_YqaNI&maxwidth=800" 
+                         alt="Imagen de Fábrica de arepas el buen sabor llanero" 
+                         class="box-image" 
+                         loading="lazy">
+                    <div class="image-number">3</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <section class="action-buttons">
+            <button class="action-btn primary call-button">
+                <i class="fas fa-phone"></i>
+                Llamar ahora
+            </button>
+            <button class="action-btn secondary directions-button">
+                <i class="fas fa-directions"></i>
+                Cómo llegar
+            </button>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="business-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>Yo Compro Acacías</h3>
+                    <p>Directorio de negocios locales</p>
+                </div>
+                <div class="footer-links">
+                    <a href="/">Inicio</a>
+                    <a href="/about.html">Acerca de</a>
+                    <a href="/contact.html">Contacto</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Yo Compro Acacías. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

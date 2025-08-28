@@ -709,8 +709,63 @@ exports.handler = async (event, context) => {
 
         switch (method) {
             case 'GET':
-                // Get businesses directly from the same source as homepage
-                const homepageBusinesses = getAllBusinesses();
+                // Get businesses directly - same 6 businesses as homepage
+                const homepageBusinesses = [
+                  {
+                    id: 1,
+                    nombre_negocio: "Fábrica de arepas el buen sabor llanero",
+                    categoria: "Restaurante",
+                    direccion: "Cra. 18 #N° 17-45, Acacías, Meta",
+                    telefono: "311 8117545",
+                    website: "",
+                    visible_en_directorio: 1
+                  },
+                  {
+                    id: 2,
+                    nombre_negocio: "Restaurante El Sabor Llanero",
+                    categoria: "Restaurante",
+                    direccion: "Calle 15 #12-34, Acacías, Meta",
+                    telefono: "320 4567890",
+                    website: "",
+                    visible_en_directorio: 1
+                  },
+                  {
+                    id: 3,
+                    nombre_negocio: "Asadero El Corral",
+                    categoria: "Restaurante",
+                    direccion: "Carrera 22 #10-15, Acacías, Meta",
+                    telefono: "315 6789012",
+                    website: "",
+                    visible_en_directorio: 1
+                  },
+                  {
+                    id: 4,
+                    nombre_negocio: "Pizzería Domino's",
+                    categoria: "Restaurante",
+                    direccion: "Calle 18 #20-45, Acacías, Meta",
+                    telefono: "310 2345678",
+                    website: "https://dominos.com.co",
+                    visible_en_directorio: 1
+                  },
+                  {
+                    id: 5,
+                    nombre_negocio: "Panadería La Espiga Dorada",
+                    categoria: "Panadería",
+                    direccion: "Carrera 19 #14-28, Acacías, Meta",
+                    telefono: "318 7890123",
+                    website: "",
+                    visible_en_directorio: 1
+                  },
+                  {
+                    id: 6,
+                    nombre_negocio: "Supermercado Olímpica",
+                    categoria: "Supermercado",
+                    direccion: "Carrera 21 #18-40, Acacías, Meta",
+                    telefono: "317 6789012",
+                    website: "https://bancolombia.com",
+                    visible_en_directorio: 1
+                  }
+                ];
                 
                 const businessesList = homepageBusinesses.map(business => ({
                     id: business.id,

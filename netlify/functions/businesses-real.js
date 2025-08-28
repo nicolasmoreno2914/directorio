@@ -221,8 +221,9 @@ exports.handler = async (event, context) => {
   console.log('🎯 Iniciando servicio de negocios con datos reales únicamente...');
   
   try {
-    // Obtener negocios con datos reales
-    const businesses = await getRealBusinessesData();
+    // Obtener negocios desde el estado compartido (sincronizado con admin)
+    const { getVisibleBusinesses } = require('./shared-business-state');
+    const businesses = getVisibleBusinesses();
     
     // Parámetros de paginación
     const page = parseInt(event.queryStringParameters?.page) || 1;

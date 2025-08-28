@@ -710,7 +710,7 @@ exports.handler = async (event, context) => {
         switch (method) {
             case 'GET':
                 // Get businesses directly from the same source as homepage
-                const homepageBusinesses = getBusinessesFromMainAPI();
+                const homepageBusinesses = getAllBusinesses();
                 
                 const businessesList = homepageBusinesses.map(business => ({
                     id: business.id,
@@ -727,7 +727,6 @@ exports.handler = async (event, context) => {
                 const hiddenCount = businessesList.length - visibleCount;
 
                 console.log(`📋 Admin: Retornando ${businessesList.length} negocios (${visibleCount} visibles, ${hiddenCount} ocultos)`);
-                console.log(`🔗 Sincronizado con businesses-real.js - Mismos datos que homepage`);
 
                 return {
                     statusCode: 200,
@@ -743,14 +742,42 @@ exports.handler = async (event, context) => {
                 };
 
             case 'PUT':
-                return {
-                    statusCode: 501,
-                    headers,
-                    body: JSON.stringify({ 
-                        error: 'Funcionalidad no implementada',
-                        message: 'Para modificar visibilidad, edita directamente businesses-real.js'
-                    })
-                };
+                // Enable real-time visibility toggling
+                const body = JSON.parse(event.body);
+                const { businessId, visible } = body;
+                
+                console.log(`🔄 Admin toggle request: Business ${businessId} -> ${visible ? 'VISIBLE' : 'HIDDEN'}`);
+                
+                const success = updateBusinessVisibility(businessId, visible);
+                
+                if (success) {
+                    return {
+                        statusCode: 200,
+                        headers: {
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            success: true,
+                            message: `Business ${businessId} visibility updated to ${visible ? 'visible' : 'hidden'}` 
+                        })
+                    };
+                } else {
+                    return {
+                        statusCode: 404,
+                        headers: {
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            error: 'Business not found' 
+                        })
+                    };
+                }
 
             default:
                 return {

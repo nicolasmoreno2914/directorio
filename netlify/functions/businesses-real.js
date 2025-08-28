@@ -76,7 +76,7 @@ function formatOpeningHours(openingHours) {
  * 🔄 DATOS DE RESPALDO MÍNIMOS (SIN IMÁGENES GENÉRICAS)
  */
 function getFallbackBusinesses() {
-  console.log('⚠️ Usando datos de respaldo expandidos con 30 negocios reales');
+  console.log('⚠️ Usando datos de respaldo - Solo 6 negocios visibles en homepage');
   
   return [
     {
@@ -211,28 +211,6 @@ function getFallbackBusinesses() {
       tiene_imagenes_reales: true,
       fuente_datos: "fallback_expanded"
     },
-    {
-      id: 10,
-      nombre_negocio: "Hotel Los Capachos",
-      categoria: "Hotel",
-      direccion: "Calle 22 #12-25, Acacías, Meta",
-      telefono: "319 7890123",
-      website: "",
-      horarios: "24 horas",
-      calificacion: 4.2,
-      imagenes: JSON.stringify([
-        "https://lh3.googleusercontent.com/places/ANXAkqRKvpAnK8IdcHUl6u-Z1YKQfdtLjA4qR2RNLjw-WjjMJfOFBo5QrKrfqJOoU5dCm3WqLI5fGjKvpAnK8IdcHUl6u-Z1YKQfdtLjA4qR2RNLjw=s1600-w400",
-        "https://lh3.googleusercontent.com/places/ANXAkqSKvpAnK8IdcHUl6u-Z1YKQfdtLjA4qR2RNLjw-WjjMJfOFBo5QrKrfqJOoU5dCm3WqLI5fGjKvpAnK8IdcHUl6u-Z1YKQfdtLjA4qR2RNLjw=s1600-w400",
-        "https://lh3.googleusercontent.com/places/ANXAkqTKvpAnK8IdcHUl6u-Z1YKQfdtLjA4qR2RNLjw-WjjMJfOFBo5QrKrfqJOoU5dCm3WqLI5fGjKvpAnK8IdcHUl6u-Z1YKQfdtLjA4qR2RNLjw=s1600-w400"
-      ]),
-      visible_en_directorio: 1,
-      lat: 3.9889,
-      lon: -73.7561,
-      descripcion: "Hotel cómodo en el centro de Acacías",
-      google_place_id: "ChIJtest123456798",
-      tiene_imagenes_reales: true,
-      fuente_datos: "fallback_expanded"
-    }
   ];
 }
 

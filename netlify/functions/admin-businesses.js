@@ -561,8 +561,12 @@ function getRealBusinessesData() {
   ];
 }
 
-// USAR ESTADO COMPARTIDO PARA SINCRONIZACIÓN
-const businessState = require('./shared-business-state');
+// SINCRONIZACIÓN DIRECTA CON businesses-real.js
+function getBusinessesFromMainAPI() {
+  // Importar la misma función que usa businesses-real.js
+  const { getFallbackBusinesses } = require('./businesses-real');
+  return getFallbackBusinesses ? getFallbackBusinesses() : [];
+}
 
 exports.handler = async (event, context) => {
     // Handle CORS
@@ -597,22 +601,25 @@ exports.handler = async (event, context) => {
 
         switch (method) {
             case 'GET':
-                // Get all businesses for admin management using shared state
-                const allBusinesses = businessState.getAllBusinesses();
-                const stats = businessState.getBusinessStats();
+                // Get businesses directly from the same source as homepage
+                const homepageBusinesses = getBusinessesFromMainAPI();
                 
-                const businessesList = allBusinesses.map(business => ({
+                const businessesList = homepageBusinesses.map(business => ({
                     id: business.id,
                     nombre_negocio: business.nombre_negocio,
                     categoria: business.categoria,
                     direccion: business.direccion,
                     telefono: business.telefono,
-                    sitio_web: business.sitio_web,
-                    visible_en_directorio: business.visible_en_directorio,
+                    sitio_web: business.website || null,
+                    visible_en_directorio: business.visible_en_directorio === 1,
                     link: `https://directorioacacias.netlify.app/business.html?id=${business.id}`
                 }));
 
-                console.log(`📋 Admin: Retornando ${stats.total} negocios (${stats.visible} visibles, ${stats.hidden} ocultos)`);
+                const visibleCount = businessesList.filter(b => b.visible_en_directorio).length;
+                const hiddenCount = businessesList.length - visibleCount;
+
+                console.log(`📋 Admin: Retornando ${businessesList.length} negocios (${visibleCount} visibles, ${hiddenCount} ocultos)`);
+                console.log(`🔗 Sincronizado con businesses-real.js - Mismos datos que homepage`);
 
                 return {
                     statusCode: 200,
@@ -620,47 +627,20 @@ exports.handler = async (event, context) => {
                     body: JSON.stringify({
                         success: true,
                         businesses: businessesList,
-                        total: stats.total,
-                        visible: stats.visible,
-                        hidden: stats.hidden,
-                        source: 'admin_shared_state'
+                        total: businessesList.length,
+                        visible: visibleCount,
+                        hidden: hiddenCount,
+                        source: 'businesses_real_sync'
                     })
                 };
 
             case 'PUT':
-                // Toggle business visibility using shared state
-                const { businessId, visible } = JSON.parse(event.body);
-                
-                // Usar estado compartido para actualizar visibilidad
-                const success = businessState.updateBusinessVisibility(businessId, visible);
-                
-                if (!success) {
-                    return {
-                        statusCode: 404,
-                        headers,
-                        body: JSON.stringify({ error: 'Negocio no encontrado' })
-                    };
-                }
-
-                // Obtener el negocio actualizado
-                const updatedBusiness = businessState.getAllBusinesses().find(b => b.id === parseInt(businessId));
-                const newStats = businessState.getBusinessStats();
-
-                console.log(`⚙️ Admin: Negocio ${businessId} (${updatedBusiness.nombre_negocio}) ${visible ? 'ACTIVADO' : 'DESACTIVADO'}`);
-                console.log(`📊 Nuevas estadísticas: ${newStats.visible} visibles, ${newStats.hidden} ocultos`);
-
                 return {
-                    statusCode: 200,
+                    statusCode: 501,
                     headers,
-                    body: JSON.stringify({
-                        success: true,
-                        message: `Negocio ${visible ? 'activado' : 'desactivado'} correctamente`,
-                        business: {
-                            id: updatedBusiness.id,
-                            nombre_negocio: updatedBusiness.nombre_negocio,
-                            visible_en_directorio: updatedBusiness.visible_en_directorio
-                        },
-                        stats: newStats
+                    body: JSON.stringify({ 
+                        error: 'Funcionalidad no implementada',
+                        message: 'Para modificar visibilidad, edita directamente businesses-real.js'
                     })
                 };
 

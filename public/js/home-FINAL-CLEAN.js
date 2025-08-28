@@ -73,36 +73,15 @@ async function loadBusinesses() {
             console.log('📈 Fuentes:', data.stats.fuentes);
         }
         
-        // OBTENER ESTADO DE VISIBILIDAD DEL ADMIN
-        let hiddenBusinesses = [];
-        let visibilityData = null;
-        try {
-            console.log('🔍 Consultando estado de visibilidad admin...');
-            const visibilityResponse = await fetch('/.netlify/functions/admin-visibility');
-            if (visibilityResponse.ok) {
-                visibilityData = await visibilityResponse.json();
-                hiddenBusinesses = visibilityData.hiddenBusinesses || [];
-                console.log('👁️ Negocios ocultos por admin:', hiddenBusinesses);
-            }
-        } catch (visError) {
-            console.warn('⚠️ No se pudo obtener estado de visibilidad, mostrando todos:', visError);
-        }
+        // USAR DIRECTAMENTE LOS NEGOCIOS DE businesses-real.js SIN FILTROS ADMIN
+        allBusinesses = data.data;
         
-        // FILTRAR NEGOCIOS BASÁNDOSE EN ESTADO DE VISIBILIDAD ADMIN
-        const allBusinessesData = data.data; // Usar data.data del nuevo formato
-        allBusinesses = allBusinessesData.filter(business => {
-            const isHidden = hiddenBusinesses.includes(business.id);
-            return !isHidden; // Solo mostrar los que NO están ocultos
-        });
-        
-        console.log(`🎯 FILTRADO APLICADO:`);
-        console.log(`   📊 Total negocios: ${allBusinessesData.length}`);
-        console.log(`   👁️ Negocios ocultos: ${hiddenBusinesses.length} [${hiddenBusinesses.join(', ')}]`);
-        console.log(`   ✅ Negocios visibles: ${allBusinesses.length}`);
-        console.log(`   🔄 Última actualización admin: ${visibilityData?.lastUpdated || 'N/A'}`);
+        console.log(`🎯 MOSTRANDO TODOS LOS NEGOCIOS DE businesses-real.js:`);
+        console.log(`   ✅ Total negocios visibles: ${allBusinesses.length}`);
+        console.log(`   🔗 Sincronizado con panel administrativo`);
         
         if (allBusinesses.length === 0) {
-            console.warn('⚠️ No hay negocios visibles para mostrar');
+            console.warn('⚠️ No hay negocios para mostrar');
         }
         
         // Renderizar primera página
